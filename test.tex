@@ -20,12 +20,167 @@
 \section*{Problem 1: Short(er) problems. (10 pts)}
 \begin{enumerate}[label=\arabic*.]
 	\item (2 pts) Prove Chebyshev's inequality using Markov's Inequality.
+\[
+\Pr(X \ge t) \le \frac{\mathbb{E}[X]}{t}
+\qquad\text{to get }\Pr\!\big[X-\mathbb{E}[X]\ge k\sigma\big]\le \frac{1}{k^2}.
+\]
+
+Let
+\[
+S = (X-\mathbb{E}[X])^2
+\qquad \cdots \qquad
+\mathrm{Var}(X)=S
+\]
+
+Then
+\[
+\Pr(S \ge t) \le \frac{\mathbb{E}[S]}{t}
+\]
+
+\[
+\Pr\!\big((X-\mathbb{E}[X])^2 \ge t\big) \le \frac{\mathrm{Var}[X]}{t}
+\]
+
+\[
+t = k^2\sigma^2
+\]
+
+\[
+\Pr\!\big((X-\mathbb{E}[X])^2 \ge k^2\sigma^2\big)
+\le
+\frac{\mathrm{Var}[X]}{k^2\sigma^2}
+\]
+
+\[
+\text{-- square root the LHS --}
+\]
+
+\[
+\Pr\!\big(\,|X-\mathbb{E}[X]| \ge k\sigma\,\big)
+\le
+\frac{\mathrm{Var}[X]}{k^2\sigma^2},
+\qquad
+\mathrm{Var}(X)=\sigma^2
+\]
+
+\[
+\Pr\!\big(\,|X-\mathbb{E}[X]| \ge k\sigma\,\big)
+\le
+\frac{1}{k^2}
+\qquad \Box
+\]
 
 	\item (4 pts) Consider inserting $m$ keys into a hash table of size $n=5m^2$ using a uniformly random hash function. By the mark-and-recapture analysis from class, we know that the expected number of collisions in the table is
 	\[ \frac{m\cdot(m-1)}{2\cdot 5 m^2} < \tfrac{1}{10}. \]
 	So, by Markov's inequality, with probability $>9/10$, the table has no collisions (<1 collisions). Thus, we can look up items from the table in worst-case $O(1)$ time. Give an alternative proof of the fact that we have no collisions with $>9/10$ probability in a table of size $c m^2$ for some sufficiently large constant $c$. Specifically, to have no collisions, we must have the following events all happen in sequence: the second item inserted into the hash table doesn't collide with an existing item, the third item inserted doesn't collide with an existing item, \dots, the $m$th item inserted doesn't collide with an existing item. Analyze the probability these events all happen. Hint:\ You might want to use the fact that $\left(1-\tfrac{1}{n}\right)^n \le e^{-1}\le \left(1-\tfrac{1}{n}\right)^{n-1}$ for any integer $n\ge2$.
 
+	\[
+	\Pr(\text{No collision inserting $m$ keys})
+	=
+	1-\Pr(\text{collision inserting $m$ keys})
+	\]
+
+	\[
+	n = c m^2,\qquad c\in\mathbb{R}
+	\]
+
+	\[
+	\Pr(h(x)=h(y))=\frac{1}{n}
+	\;\;\Rightarrow\;\;
+	\Pr(h(x)\neq h(y))=1-\frac{1}{n}
+	\]
+
+	\[
+	\Pr(\text{no collision})
+	=
+	\prod_{i=1}^{m-1}\left(1-\frac{i}{n}\right)
+	\]
+
+	\[
+	\ge
+	\left(1-\frac{m}{n}\right)^m
+	\]
+
+	So
+	\[
+	\left(1-\frac{m}{n}\right)^m
+	=
+	\left(1-\frac{m}{c m^2}\right)^m
+	=
+	\left(1-\frac{1}{c m}\right)^m
+	=
+	\left(\left(1-\frac{1}{c m}\right)^{c m}\right)^{\frac{1}{c}}
+	\]
+
+	\[
+	1-x \le e^{-x}
+	\;\;\Leftrightarrow\;\;
+	\frac{1}{2e}\le \left(1-\frac{1}{x}\right)^x \le \frac{1}{e},
+	\qquad x=c m
+	\]
+
+	So
+	\[
+	\left(\left(1-\frac{1}{c m}\right)^{c m}\right)^{\frac{1}{c}}
+	\ge
+	\left(\frac{1}{2e}\right)^{\frac{1}{c}}
+	\;\;\Rightarrow\;\;
+	\Pr(\text{no collision}) \ge \left(\frac{1}{2e}\right)^{\frac{1}{c}}
+	\]
+
+	So
+	\[
+	\left(\frac{1}{2e}\right)^{\frac{1}{c}} \ge \frac{9}{10}
+	\]
+
+	\[
+	\frac{1}{c}\ln\!\left(\frac{1}{2e}\right) \ge \ln\!\left(\frac{9}{10}\right)
+	\]
+
+	\[
+	c \ge \frac{\ln(2e)}{\ln(10/9)} \approx 16.07
+	\]
+
+	If
+	\[
+	c > 16.07
+	\quad\text{then}\quad
+	\Pr(\text{no collision}) \ge \frac{9}{10}.
+	\]
+
 	\item (4 pts) A monkey types on a 26-letter keyboard that contains lowercase letters only. Each letter is chosen independently and uniformly at random from the alphabet. If the monkey types 100,000 letters, what is the expected number of times the sequence ``nyu'' appears? Give an upper bound on the probability that the sequence ``nyu'' appears at least ten times.
+
+\[
+\Pr(\text{NYU on 3 keys})=\left(\frac{1}{26}\right)^3
+\;\Rightarrow\;
+\Pr(\text{no NYU}) = 1-\left(\frac{1}{26}\right)^3
+\]
+
+\begin{itemize}
+	\item So next question ``How many groups of 3 letters are there in $1\times 10^5$ random keys''. 
+	\item Well each key is a ``start'' to a 3 letter pattern except last 2
+	so $1\times 10^5 - 2$.
+\end{itemize}
+
+\[
+\text{So } \mathbb{E}(\text{NYU appears in }1\times 10^5)
+=
+(1\times 10^5 - 2)\left(\frac{1}{26}\right)^3
+\approx 5.6894
+\]
+
+Upper bound $\Rightarrow$ Markov inequality,
+\[
+\Pr(X>t)\le \frac{\mathbb{E}[X]}{t}
+\]
+
+\[
+\Pr(\text{NYU appears} \ge 10)
+\le
+\frac{5.6894}{10}
+=
+0.56894
+\]
 \end{enumerate}
 
 \section*{Problem 2: Why does Count-Min work so well in practice? (12 pts)}
@@ -36,6 +191,103 @@ For any positive integer $m$, let $f_1,\dots,f_m$ be the frequencies of the $m$ 
 In general, we can have that $C\ll n$. For example, it has been observed that up to 95\% of YouTube video views come from just 1\% of videos. Prove that using $O(m)$ space, Count-Min actually returns an estimate $\tilde f$ to $f(v)$ for any item $v$ satisfying
 \[ f(v) \le \tilde f(v) \le f(v) + \frac{C}{m} \]
 with $9/10$ probability. This is strictly better than the $\tfrac{m}{n}$ error bound shown in class.
+
+\subsection*{Pr. 2}
+
+\[
+\text{In $U$, let } f_1,\ldots,f_m \text{ be the frequencies of the $m$ most frequent items.}
+\]
+
+\[
+C = n - \sum_{i=1}^{m} f_i
+= [\text{total stream in stream}] - [\text{sum of most frequent}]
+\]
+
+\[
+C \ll n \;\;\Rightarrow\;\; \sum_{i=1}^{m} f_i = n - C \approx n
+\]
+
+Goal: prove in $O(m)$ Count-Min returns $\tilde f$ to $f(v)$ s.t.
+\[
+f(v) \le \tilde f \le f(v) + \frac{1}{m}C
+\qquad \text{with prob. } \frac{9}{10},
+\]
+this is strictly better than the $\frac{1}{m}n$ error bound.
+
+\bigskip
+
+\textbf{Variables (count-min + my own)}
+\begin{itemize}
+	\item $n$: \# total items in stream
+	\item $U$: Universe of all possible items
+	\item $m$: \# of ``heavy hitters''
+	\item $T$: the set of the tail i.e. not heavy hitters
+	\item $C$: tail mass (sum of freq in $T$)
+	\[ C=\sum_{x\in T} f(x) = n - \sum_{x\notin T} f(x) \]
+	\item $w$: width of each Array[row] \quad (*think count-min from class: $w$ = \# indices, $d$ = \# arrays)
+	\item $d$: \# of arrays [rows] \& hash functions
+	\item[*] Each array has own hash function
+\end{itemize}
+
+\textbf{Configuration}\; \Big[ \text{This comes from a previous solve which I am simplifying} \Big]
+
+To ensure use $O(m)$ space we set
+\[ w=4m,\qquad d=4 \qquad\Longrightarrow\qquad 4m\cdot 4 = 16m = O(m) \]
+
+\bigskip
+\textbf{Error Analysis}
+
+We state that the sketch is
+\[ \tilde f(v)=\min_{j} A_j[h_j(v)]. \]
+Since count-min doesn't under-estimate,
+\[ \tilde f(v)\ge f(v). \]
+
+Consider a row $j$:
+\[ A_j[h_j(v)] = f(v) + \sum_{\substack{y\in U\\ y\neq v}} f(y)\cdot \mathbf{1}\{h_j(y)=h_j(v)\} \]
+
+\[\text{Noise-Errors} =
+\sum_{\substack{y\notin T\\ y\neq v}} f(y)\cdot \mathbf{1}\{h_j(y)=h_j(v)\}
++
+\sum_{\substack{y\in T\\ y\neq v}} f(y)\cdot \mathbf{1}\{h_j(y)=h_j(v)\}
+\]
+
+A row $j$ is bad if high error rate
+\[ \text{Error} > \frac{C}{m}. \]
+
+This happens if either two events occur.
+
+\textbf{\#1) High error in heavy hitters: if any heavy hitters collide \ldots}
+
+\[ \Pr(\text{Any collision of ``heavyHitters''})\le \sum_{\substack{y\notin T\\ y\neq v}} \Pr(h_j(y)=h_j(v))
+= \sum_{\substack{y\notin T\\ y\neq v}} \frac{1}{w} \le \frac{m}{w} = \frac{1}{4} \]
+
+\textbf{\#2) High error rate in tail. Want it less than $\frac{C}{m}$.}
+
+Let $E_T$ be the error rate in the tail.
+\[ \mathbb{E}(E_T)=\frac{C}{w} \]
+
+Using Markov's,
+\[ \Pr\!\left(E_T \ge \frac{C}{m}\right) \le \frac{\mathbb{E}[E_T]}{C/m} = \frac{C/w}{C/m} = \frac{m}{w} = \frac{1}{4} \]
+
+\textbf{Overall}
+
+\[ \Pr(\text{High error Heavy hitters}) \le \frac{1}{4},
+\qquad
+\Pr(\text{High error tail noise}) \le \frac{1}{4} \]
+
+So
+\[ \Pr(\text{row is bad}) = \Pr(\text{High error Heavy hitters} \ \cup\ \text{High error tail noise}) \le \frac{1}{4}+\frac{1}{4} = \frac{1}{2} \]
+
+So how many arrays (rows) are needed so that, with probability at least $9/10$, we have
+\(\tilde f \le f(v)+\frac{C}{m}\)? Solve
+\[
+1-\left(\tfrac{1}{2}\right)^d = \tfrac{9}{10},
+\]
+which gives $d=4$. With $w=4m$ and $d=4$ we use $4\cdot 4m=16m=O(m)$ space. Hence the error bound holds with probability at least $9/10$. \(\Box\)
+
+\bigskip
+{\small *Possible risky notation spot: some sources use $n$ for universe size; here $n$ is total stream count.}
+
 
 \section*{Problem 3: Randomized methods for efficient disease identification (group testing). (12 pts)}
 One of the most important factors in controlling diseases like bird flu or, a few years ago, COVID-19, is testing. However, testing often requires processing in a lab, so can be expensive and slow. One way to make it cheaper is to test patients/livestock/etc.
@@ -49,12 +301,168 @@ in groups. The biological samples from multiple individuals (e.g., multiple nose
 
 \section*{Problem 4: Try out mark-and-recapture! (12 pts)}
 \begin{enumerate}[label=\arabic*.]
-	\item (6 pts) Prove the following claim from Lecture 1: Specifically, if we collect $O\big(\tfrac{n}{\varepsilon}\big)$ samples uniformly from a set of unknown size $n$, then we can return an estimate $\tilde n$ which, with probability $9/10$, satisfies
-	\[ (1-\varepsilon)n \le \tilde n \le (1+\varepsilon)n. \]
+	\item (6 pts)
 
-	\item (6 pts) Consider estimating the number of unique articles on Wikipedia. Wikipedia provides a way to access a random article by following the link \texttt{https://en.wikipedia.org/wiki/Special:Random}. You might notice that Wikipedia's random article generator does not return truly uniform random articles. As discussed, Wikipedia assigns each article $i$ a random id $r_i$, which we can model as a random real number in $[0,1]$. Then, to pick a random article, a number is sampled uniformly from $[0,1]$; article $i$ is returned if that number lies in the range $[r_i, r_{i+1}]$. Since these intervals themselves are random, the probability distribution won't be perfectly uniform.
+	% Pr. 4  (Mark-and-Recapture)  --- LaTeX for this section only
 
-	Prove that, when the interval lengths are not perfectly uniform, the mark-and-recapture will systematically underestimate the number of articles. I.e., it will return an underestimate even as the number of samples $m\to\infty$.
+	% ---------------------------
+	% Setup + Exploration
+	% ---------------------------
+	\[
+	\text{Collecting } O\!\left(\frac{\sqrt{n}}{\epsilon}\right) \text{ samples (uniformly) from a set of size } n
+	\text{, we can return } \tilde n \text{ such that, with } \Pr \ge \frac{9}{10},
+	\]
+	\[
+	(1-\epsilon)n \le \tilde n \le (1+\epsilon)n.
+	\]
+
+	\[
+	\mathbb{E}[D]
+	= \sum_{1\le i<j\le m} \Pr(X_i=X_j)
+	= \sum_{1\le i<j\le m} \frac{1}{n}
+	= \binom{m}{2}\frac{1}{n}
+	=: \mu,
+	\]
+	where \(m=\#\) queries (samples) and \(n=\#\) unique items. Also \(D=\#\) duplicates (collisions).
+
+	We can flip this to define the estimator
+	\[
+	\tilde n := \frac{m(m-1)}{2D}.
+	\]
+	\[
+	\text{(*) Note: this is a plug-in idea, replacing }\mathbb{E}[D]=\mu \text{ by the observed } D.
+	\]
+
+	% ---------------------------
+	% Finding Var(D) \le \binom{m}{2}\frac{1}{n}
+	% ---------------------------
+	Define indicator variables, for \(1\le i<j\le m\),
+	\[
+	I_{ij} :=
+	\begin{cases}
+	1 & \text{if } X_i=X_j,\\
+	0 & \text{otherwise}.
+	\end{cases}
+	\]
+	Then
+	\[
+	D=\sum_{1\le i<j\le m} I_{ij},
+	\qquad
+	\mathbb{E}[I_{ij}] = \Pr(X_i=X_j)=\frac{1}{n}.
+	\]
+
+	We compute
+	\[
+	\operatorname{Var}(D)=\mathbb{E}[D^2]-\bigl(\mathbb{E}[D]\bigr)^2.
+	\]
+	Also,
+	\[
+	D^2
+	=
+	\left(\sum_{i<j} I_{ij}\right)^2
+	=
+	\sum_{i<j} I_{ij}^2
+	+
+	2\sum_{\substack{(i<j),(k<\ell)\\(i<j)<(k<\ell)}} I_{ij}I_{k\ell}.
+	\]
+	Taking expectations,
+	\[
+	\mathbb{E}[D^2]
+	=
+	\sum_{i<j}\mathbb{E}[I_{ij}^2]
+	+
+	2\sum_{(i<j)<(k<\ell)} \mathbb{E}[I_{ij}I_{k\ell}].
+	\]
+	Since \(I_{ij}^2=I_{ij}\) (Bernoulli),
+	\[
+	\mathbb{E}[I_{ij}^2]=\mathbb{E}[I_{ij}]=\frac{1}{n}.
+	\]
+
+	Now write variance in the standard way:
+	\[
+	\operatorname{Var}(D)
+	=
+	\sum_{i<j}\operatorname{Var}(I_{ij})
+	+
+	2\sum_{(i<j)<(k<\ell)} \operatorname{Cov}(I_{ij},I_{k\ell}).
+	\]
+	We treat the covariance terms as \(0\) (as in the notes we used), hence
+	\[
+	\operatorname{Var}(D)=\sum_{i<j}\operatorname{Var}(I_{ij}).
+	\]
+	Each \(I_{ij}\) is Bernoulli with \(p=\frac{1}{n}\), so
+	\[
+	\operatorname{Var}(I_{ij}) = p(1-p)\le p=\frac{1}{n}.
+	\]
+	Therefore,
+	\[
+	\operatorname{Var}(D)
+	\le \sum_{i<j}\frac{1}{n}
+	=\binom{m}{2}\frac{1}{n}
+	=\mu.
+	\]
+
+	% ---------------------------
+	% Chebyshev + Translating to a bound on \tilde n
+	% ---------------------------
+	Chebyshev (variance form):
+	\[
+	\Pr\bigl(|D-\mu|\ge t\bigr)\le \frac{\operatorname{Var}(D)}{t^2}.
+	\]
+	Using \(\operatorname{Var}(D)\le \mu\),
+	\[
+	\Pr\bigl(|D-\mu|\ge t\bigr)\le \frac{\mu}{t^2}.
+	\]
+	So by complement,
+	\[
+	\Pr\bigl(|D-\mu|\le t\bigr)\ge 1-\frac{\mu}{t^2}.
+	\]
+
+	Set \(t=\alpha\mu\) (with \(\alpha>0\)):
+	\[
+	\Pr\bigl(|D-\mu|\le \alpha\mu\bigr)\ge 1-\frac{1}{\alpha^2\mu}.
+	\]
+	The event \(|D-\mu|\le \alpha\mu\) is equivalent to
+	\[
+	(1-\alpha)\mu \le D \le (1+\alpha)\mu.
+	\]
+	Substitute \(\mu=\binom{m}{2}\frac{1}{n}\):
+	\[
+	(1-\alpha)\binom{m}{2}\frac{1}{n} \le D \le (1+\alpha)\binom{m}{2}\frac{1}{n}.
+	\]
+	Invert (all terms are positive) and use \(\tilde n=\frac{\binom{m}{2}}{D}\):
+	\[
+	\frac{n}{1+\alpha}\le \tilde n \le \frac{n}{1-\alpha}.
+	\]
+
+	% ---------------------------
+	% Choose parameters for probability 9/10, then connect to \epsilon
+	% ---------------------------
+	To get probability at least \(9/10\), it suffices that
+	\[
+	1-\frac{1}{\alpha^2\mu}\ge \frac{9}{10}
+	\quad\Longleftrightarrow\quad
+	\frac{1}{\alpha^2\mu}\le \frac{1}{10}
+	\quad\Longleftrightarrow\quad
+	\mu \ge \frac{10}{\alpha^2}.
+	\]
+	Since \(\mu=\binom{m}{2}\frac{1}{n}\),
+	\[
+	\binom{m}{2}\frac{1}{n}\ge \frac{10}{\alpha^2}
+	\quad\Longleftrightarrow\quad
+	\binom{m}{2}\ge \frac{10n}{\alpha^2}.
+	\]
+
+	To match the target \((1-\epsilon)n\le \tilde n\le (1+\epsilon)n\), it is enough to choose
+	\[
+	\alpha \le \frac{\epsilon}{1+\epsilon}.
+	\]
+	A simple safe choice is \(\alpha=\epsilon/2\), which yields
+	\[
+	m = O\!\left(\frac{\sqrt{n}}{\epsilon}\right)
+	\quad \text{and} \quad
+	\Pr\!\left((1-\epsilon)n\le \tilde n \le (1+\epsilon)n\right)\ge \frac{9}{10}.
+	\]
 \end{enumerate}
 
 \section*{Problem 5: Distributed Importance Sampling. (15 pts)}
