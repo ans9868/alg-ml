@@ -301,168 +301,206 @@ in groups. The biological samples from multiple individuals (e.g., multiple nose
 
 \section*{Problem 4: Try out mark-and-recapture! (12 pts)}
 \begin{enumerate}[label=\arabic*.]
-	\item (6 pts)
-
-	% Pr. 4  (Mark-and-Recapture)  --- LaTeX for this section only
-
-	% ---------------------------
-	% Setup + Exploration
-	% ---------------------------
+	\item (6 pts) Prove the following claim from Lecture 1: Specifically, if we collect $O\big(\tfrac{\sqrt{n}}{\varepsilon}\big)$ samples uniformly from a set of unknown size $n$, then we can return an estimate \(\tilde n\) which, with probability $9/10$, satisfies
 	\[
-	\text{Collecting } O\!\left(\frac{\sqrt{n}}{\epsilon}\right) \text{ samples (uniformly) from a set of size } n
-	\text{, we can return } \tilde n \text{ such that, with } \Pr \ge \frac{9}{10},
+	(1-\varepsilon)n \le \tilde n \le (1+\varepsilon)n.
+	\]
+
+	% -------------------------
+	% Pr. 4  (your handwritten flow)
+	% -------------------------
+
+	% ---------- Part 1: Setup + Exploration ----------
+	\[
+		ext{Collecting } O\!\left(\frac{\sqrt{n}}{\epsilon}\right)\text{ samples (uniformly) from set } n,
+		ext{ then can return } \tilde n \text{ s.t. } \Pr \ge \frac{9}{10}
 	\]
 	\[
 	(1-\epsilon)n \le \tilde n \le (1+\epsilon)n.
 	\]
 
 	\[
-	\mathbb{E}[D]
-	= \sum_{1\le i<j\le m} \Pr(X_i=X_j)
-	= \sum_{1\le i<j\le m} \frac{1}{n}
+		ext{This comes from } \ \mathbb{E}[D]
+	= \sum_{i<j}\frac{1}{n}
 	= \binom{m}{2}\frac{1}{n}
-	=: \mu,
-	\]
-	where \(m=\#\) queries (samples) and \(n=\#\) unique items. Also \(D=\#\) duplicates (collisions).
-
-	We can flip this to define the estimator
-	\[
-	\tilde n := \frac{m(m-1)}{2D}.
-	\]
-	\[
-	\text{(*) Note: this is a plug-in idea, replacing }\mathbb{E}[D]=\mu \text{ by the observed } D.
+	\approx \frac{m(m-1)}{n}.
 	\]
 
-	% ---------------------------
-	% Finding Var(D) \le \binom{m}{2}\frac{1}{n}
-	% ---------------------------
-	Define indicator variables, for \(1\le i<j\le m\),
 	\[
-	I_{ij} :=
-	\begin{cases}
-	1 & \text{if } X_i=X_j,\\
-	0 & \text{otherwise}.
-	\end{cases}
+		ext{where } m=\#\text{ queries,} \qquad n=\#\text{ unique items (we are told).}
 	\]
-	Then
 	\[
-	D=\sum_{1\le i<j\le m} I_{ij},
+	D=\#\text{ duplicates.}
+	\]
+
+	\[
+		ext{we can flip this to}\qquad
+		ilde n=\frac{m(m-1)}{2D},
 	\qquad
-	\mathbb{E}[I_{ij}] = \Pr(X_i=X_j)=\frac{1}{n}.
+		ext{but don't know how certain for a number }\tilde n\text{ to see }D\text{ duplicates.}
 	\]
 
-	We compute
+	% ---------- Part 2: Finding Var(D) \le \binom{m}{2}\frac{1}{n} ----------
+	\[
+	\mathbb{E}[D]=\sum \mathbb{E}[I_{ij}]
+	=\sum \frac{1}{n}
+	=\binom{m}{2}\frac{1}{n}
+	=:\mu.
+	\]
+
+	\[
+	I_{ij}=
+	\begin{cases}
+	1 & x_i=x_j\\
+	0 & x_i\ne x_j
+	\end{cases}
+	\qquad\Rightarrow\qquad
+	\Pr(\text{collision})=\Pr(I_{ij}=1)=\Pr(x_i=x_j)=\frac{1}{n}=\mathbb{E}[I_{ij}].
+	\]
+
 	\[
 	\operatorname{Var}(D)=\mathbb{E}[D^2]-\bigl(\mathbb{E}[D]\bigr)^2.
 	\]
-	Also,
+
 	\[
-	D^2
-	=
-	\left(\sum_{i<j} I_{ij}\right)^2
-	=
-	\sum_{i<j} I_{ij}^2
-	+
-	2\sum_{\substack{(i<j),(k<\ell)\\(i<j)<(k<\ell)}} I_{ij}I_{k\ell}.
-	\]
-	Taking expectations,
-	\[
-	\mathbb{E}[D^2]
-	=
-	\sum_{i<j}\mathbb{E}[I_{ij}^2]
-	+
-	2\sum_{(i<j)<(k<\ell)} \mathbb{E}[I_{ij}I_{k\ell}].
-	\]
-	Since \(I_{ij}^2=I_{ij}\) (Bernoulli),
-	\[
-	\mathbb{E}[I_{ij}^2]=\mathbb{E}[I_{ij}]=\frac{1}{n}.
+	D^2=\sum_{i<j} I_{ij}^2 + 2\sum_{i<j} I_{ij}I_{k\ell}
+	\qquad\Rightarrow\qquad
+	\mathbb{E}[D^2]=\sum_{i<j}\mathbb{E}[I_{ij}^2]+2\sum_{i<j}\mathbb{E}[I_{ij}I_{k\ell}].
 	\]
 
-	Now write variance in the standard way:
+	\[
+		ext{cov}(x_i,x_j)=\mathbb{E}[x_ix_j]-\mathbb{E}[x_i]\mathbb{E}[x_j].
+	\]
+
 	\[
 	\operatorname{Var}(D)
-	=
-	\sum_{i<j}\operatorname{Var}(I_{ij})
-	+
-	2\sum_{(i<j)<(k<\ell)} \operatorname{Cov}(I_{ij},I_{k\ell}).
+	=\sum_{i<j}\operatorname{Var}(I_{ij})+2\sum_{i<j}\operatorname{cov}(\cdot,\cdot)
+	\quad\Rightarrow\quad
+	\sum \operatorname{cov}(\cdot,\cdot)=0.
 	\]
-	We treat the covariance terms as \(0\) (as in the notes we used), hence
+
 	\[
 	\operatorname{Var}(D)=\sum_{i<j}\operatorname{Var}(I_{ij}).
 	\]
-	Each \(I_{ij}\) is Bernoulli with \(p=\frac{1}{n}\), so
+
 	\[
-	\operatorname{Var}(I_{ij}) = p(1-p)\le p=\frac{1}{n}.
+	\operatorname{Var}(I_{ij})=p(1-p)\ \ \text{since Bernoulli,}\qquad
+	p=\frac{1}{n}
 	\]
-	Therefore,
 	\[
-	\operatorname{Var}(D)
-	\le \sum_{i<j}\frac{1}{n}
-	=\binom{m}{2}\frac{1}{n}
-	=\mu.
+	\operatorname{Var}(I_{ij})=\frac{1}{n}\left(1-\frac{1}{n}\right)\le \frac{1}{n}.
 	\]
 
-	% ---------------------------
-	% Chebyshev + Translating to a bound on \tilde n
-	% ---------------------------
-	Chebyshev (variance form):
 	\[
-	\Pr\bigl(|D-\mu|\ge t\bigr)\le \frac{\operatorname{Var}(D)}{t^2}.
-	\]
-	Using \(\operatorname{Var}(D)\le \mu\),
-	\[
-	\Pr\bigl(|D-\mu|\ge t\bigr)\le \frac{\mu}{t^2}.
-	\]
-	So by complement,
-	\[
-	\Pr\bigl(|D-\mu|\le t\bigr)\ge 1-\frac{\mu}{t^2}.
+	\boxed{
+	\operatorname{Var}(D)\le \sum_{i<j}\frac{1}{n}=\binom{m}{2}\frac{1}{n}
+	}
 	\]
 
-	Set \(t=\alpha\mu\) (with \(\alpha>0\)):
+	% ---------- Part 3: Chebyshev + translate toward the goal ----------
 	\[
-	\Pr\bigl(|D-\mu|\le \alpha\mu\bigr)\ge 1-\frac{1}{\alpha^2\mu}.
-	\]
-	The event \(|D-\mu|\le \alpha\mu\) is equivalent to
-	\[
-	(1-\alpha)\mu \le D \le (1+\alpha)\mu.
-	\]
-	Substitute \(\mu=\binom{m}{2}\frac{1}{n}\):
-	\[
-	(1-\alpha)\binom{m}{2}\frac{1}{n} \le D \le (1+\alpha)\binom{m}{2}\frac{1}{n}.
-	\]
-	Invert (all terms are positive) and use \(\tilde n=\frac{\binom{m}{2}}{D}\):
-	\[
-	\frac{n}{1+\alpha}\le \tilde n \le \frac{n}{1-\alpha}.
+	\operatorname{Var}(D)\le \binom{m}{2}\frac{1}{n}=\mu,
+	\qquad
+	\mathbb{E}[D]=\mu.
+	\qquad
+		ext{(we know)} \ \ \text{(our goal)}
 	\]
 
-	% ---------------------------
-	% Choose parameters for probability 9/10, then connect to \epsilon
-	% ---------------------------
-	To get probability at least \(9/10\), it suffices that
 	\[
-	1-\frac{1}{\alpha^2\mu}\ge \frac{9}{10}
-	\quad\Longleftrightarrow\quad
-	\frac{1}{\alpha^2\mu}\le \frac{1}{10}
-	\quad\Longleftrightarrow\quad
-	\mu \ge \frac{10}{\alpha^2}.
-	\]
-	Since \(\mu=\binom{m}{2}\frac{1}{n}\),
-	\[
-	\binom{m}{2}\frac{1}{n}\ge \frac{10}{\alpha^2}
-	\quad\Longleftrightarrow\quad
-	\binom{m}{2}\ge \frac{10n}{\alpha^2}.
+		ext{Chebyshev:}\qquad
+	\Pr\bigl(|D-\mu|\ge k\sigma\bigr)\le \frac{1}{k^2}
+	\qquad
+		ext{(* you wrote: not what we want, swap)}
 	\]
 
-	To match the target \((1-\epsilon)n\le \tilde n\le (1+\epsilon)n\), it is enough to choose
 	\[
-	\alpha \le \frac{\epsilon}{1+\epsilon}.
+	\Pr\bigl(|D-\mu|\le k\sigma\bigr)\ge 1-\frac{1}{k^2}
+	\qquad
+		ext{(* want }9/10\text{ guarantee within our range)}
 	\]
-	A simple safe choice is \(\alpha=\epsilon/2\), which yields
+
 	\[
-	m = O\!\left(\frac{\sqrt{n}}{\epsilon}\right)
-	\quad \text{and} \quad
-	\Pr\!\left((1-\epsilon)n\le \tilde n \le (1+\epsilon)n\right)\ge \frac{9}{10}.
+	\Pr\bigl(|D-\mu|\le t\bigr)\ge 1-\frac{\operatorname{Var}(D)}{t^2},
+	\qquad
+	u=\frac{t}{\sigma},
+	\qquad
+	sigma^2=\operatorname{Var}(D).
 	\]
+
+	\[
+	t=a\mu.
+	\]
+
+	\[
+	\Pr\bigl(|D-\mu|\le a\mu\bigr)\ge 1-\frac{\operatorname{Var}(D)}{a^2\mu^2}
+	\ge 1-\frac{\mu}{a^2\mu^2}
+	=1-\frac{1}{a^2\mu}.
+	\]
+
+	\[
+	-a\mu \le D-\mu \le a\mu
+	\]
+
+	\[
+	\mu(1-a)\le D \le \mu(1+a).
+	\]
+
+	\[
+	\boxed{
+	\frac{n}{1+a}\ \le\ \tilde n\ \le\ \frac{n}{1-a}
+	}
+	\qquad
+		ext{(* if you had the denominators swapped earlier, that was the sign-risk spot)}
+	\]
+
+	% ---------- Part 4: Bound work to hit 9/10, then big-O ----------
+	\[
+	1-\frac{1}{u^2}\ge \frac{9}{10}
+	\]
+	\[
+	-\frac{1}{u^2}\ge -\frac{1}{10}
+	\]
+	\[
+	\frac{1}{u^2}\le \frac{1}{10}
+	\]
+	\[
+	u^2\ge 10
+	\]
+	\[
+	u\ge \sqrt{10}.
+	\]
+
+	\[
+	u=\frac{t}{\sigma},\qquad t=a\mu
+	\]
+	\[
+	u=\frac{a\mu}{\sigma}.
+	\]
+
+	\[
+	\frac{a\mu}{\sigma}\ge \sqrt{10}
+	\]
+	\[
+	\mu \ge \frac{\sqrt{10}\,\sigma}{a}.
+	\]
+
+	\[
+	\binom{m}{2}\frac{1}{n}\ge \frac{\sqrt{10}\,\sigma}{a}
+	\qquad\Rightarrow\qquad
+	\frac{m(m-1)}{2}\ge \frac{n}{a}\,c,
+	\ \ c=\sqrt{10}\,\sigma.
+	\]
+
+	\[
+	m=O\!\left(\frac{\sqrt{n}}{a}\right),
+	\qquad
+		ext{let } a=\epsilon,
+	\qquad
+	\boxed{
+	m=O\!\left(\frac{\sqrt{n}}{\epsilon}\right).
+	}
+	\]
+
 \end{enumerate}
 
 \section*{Problem 5: Distributed Importance Sampling. (15 pts)}
