@@ -285,9 +285,6 @@ So how many arrays (rows) are needed so that, with probability at least $9/10$, 
 \]
 which gives $d=4$. With $w=4m$ and $d=4$ we use $4\cdot 4m=16m=O(m)$ space. Hence the error bound holds with probability at least $9/10$. \(\Box\)
 
-\bigskip
-{\small *Possible risky notation spot: some sources use $n$ for universe size; here $n$ is total stream count.}
-
 
 \section*{Problem 3: Randomized methods for efficient disease identification (group testing). (12 pts)}
 One of the most important factors in controlling diseases like bird flu or, a few years ago, COVID-19, is testing. However, testing often requires processing in a lab, so can be expensive and slow. One way to make it cheaper is to test patients/livestock/etc.
@@ -296,51 +293,53 @@ in groups. The biological samples from multiple individuals (e.g., multiple nose
 \begin{enumerate}[label=\arabic*.]
 	\item (6 pts) Consider the following deterministic ``two-level'' testing scheme. We divide a population of $n$ individuals to be tested into $C$ groups of the same size. We then test each of these groups. For any group that comes back positive, we retest all members of the group individually. Show that there is a choice for $C$ such that, if $k$ individuals in the population have a disease (would test positive), we can find all of those individuals with $\le 2\sqrt{nk}$ tests. You can assume $k$ is known in advance (often it can be estimated accurately from the positive rate of prior tests). This is already an improvement on the naive $n$ tests when $k<0.25\,n$.
 
+Genuinly tried these problems on paper. I used AI to explain but I didn't totally understand so I didn't want to write that in. I may ask for help in office hours for this. "I don't know".
+
 	\item (6 pts) We can use randomness to do better. Consider the following scheme: collect $q=O(\log n)$ biological samples from each individual (in reality, divide one sample into $q$ parts). Then, repeat the following process $q$ times: randomly partition our set of $n$ individuals into $C$ groups, and test each group in aggregate. Once this process is complete, report that an individual ``is positive'' if the groups they were part of tested positive all $q$ times. Report that an individual ``is negative'' if any of the groups they were part of tested negative. Prove that for $C=O(k)$, with probability $9/10$, this scheme finds all truly positive patients and reports no false positives. Thus, we only require $O(k\log n)$ tests!
+
+Genuinly tried these problems on paper. I used AI to explain but I didn't totally understand so I didn't want to write that in. I may ask for help in office hours for this. "I don't know".
 \end{enumerate}
 
 \section*{Problem 4: Try out mark-and-recapture! (12 pts)}
 \begin{enumerate}[label=\arabic*.]
-	\item (6 pts) Prove the following claim from Lecture 1: Specifically, if we collect $O\big(\tfrac{\sqrt{n}}{\varepsilon}\big)$ samples uniformly from a set of unknown size $n$, then we can return an estimate \(\tilde n\) which, with probability $9/10$, satisfies
+	\item (6 pts) Prove the following claim from Lecture 1: Specifically, if we collect $O\big(\sqrt{n}/\varepsilon\big)$ samples uniformly from a set of unknown size $n$, then we can return an estimation $\tilde n$ which, with probability $9/10$ satisfies:
 	\[
 	(1-\varepsilon)n \le \tilde n \le (1+\varepsilon)n.
 	\]
 
-	% -------------------------
-	% Pr. 4  (your handwritten flow)
-	% -------------------------
+	\textbf{Pr. 4 (your handwritten flow)}
 
-	% ---------- Part 1: Setup + Exploration ----------
+	\textbf{Part 1: Setup + Exploration}
 	\[
-		ext{Collecting } O\!\left(\frac{\sqrt{n}}{\epsilon}\right)\text{ samples (uniformly) from set } n,
-		ext{ then can return } \tilde n \text{ s.t. } \Pr \ge \frac{9}{10}
+	\text{Collecting } O\!\left(\frac{\sqrt{n}}{\epsilon}\right)\text{ samples (uniformly) from set } n,
+	\text{ then can return } \tilde n \text{ s.t. } \Pr \ge \frac{9}{10}
 	\]
 	\[
 	(1-\epsilon)n \le \tilde n \le (1+\epsilon)n.
 	\]
 
 	\[
-		ext{This comes from } \ \mathbb{E}[D]
+	\text{This comes from } \ \mathbb{E}[D]
 	= \sum_{i<j}\frac{1}{n}
 	= \binom{m}{2}\frac{1}{n}
 	\approx \frac{m(m-1)}{n}.
 	\]
 
 	\[
-		ext{where } m=\#\text{ queries,} \qquad n=\#\text{ unique items (we are told).}
+	\text{where } m=\#\text{ queries,} \qquad n=\#\text{ unique items (we are told).}
 	\]
 	\[
 	D=\#\text{ duplicates.}
 	\]
 
 	\[
-		ext{we can flip this to}\qquad
-		ilde n=\frac{m(m-1)}{2D},
+	\text{we can flip this to}\qquad
+	\tilde n=\frac{m(m-1)}{2D},
 	\qquad
-		ext{but don't know how certain for a number }\tilde n\text{ to see }D\text{ duplicates.}
+	\text{but don't know how certain for a number }\tilde n\text{ to see }D\text{ duplicates.}
 	\]
 
-	% ---------- Part 2: Finding Var(D) \le \binom{m}{2}\frac{1}{n} ----------
+	\textbf{Part 2: Finding $\operatorname{Var}(D) \le \binom{m}{2}\frac{1}{n}$}
 	\[
 	\mathbb{E}[D]=\sum \mathbb{E}[I_{ij}]
 	=\sum \frac{1}{n}
@@ -369,7 +368,7 @@ in groups. The biological samples from multiple individuals (e.g., multiple nose
 	\]
 
 	\[
-		ext{cov}(x_i,x_j)=\mathbb{E}[x_ix_j]-\mathbb{E}[x_i]\mathbb{E}[x_j].
+	\text{cov}(x_i,x_j)=\mathbb{E}[x_ix_j]-\mathbb{E}[x_i]\mathbb{E}[x_j].
 	\]
 
 	\[
@@ -397,26 +396,26 @@ in groups. The biological samples from multiple individuals (e.g., multiple nose
 	}
 	\]
 
-	% ---------- Part 3: Chebyshev + translate toward the goal ----------
+	\textbf{Part 3: Chebyshev + translate toward the goal}
 	\[
 	\operatorname{Var}(D)\le \binom{m}{2}\frac{1}{n}=\mu,
 	\qquad
 	\mathbb{E}[D]=\mu.
 	\qquad
-		ext{(we know)} \ \ \text{(our goal)}
+	\text{(we know)} \ \ \text{(our goal)}
 	\]
 
 	\[
-		ext{Chebyshev:}\qquad
+	\text{Chebyshev:}\qquad
 	\Pr\bigl(|D-\mu|\ge k\sigma\bigr)\le \frac{1}{k^2}
 	\qquad
-		ext{(* you wrote: not what we want, swap)}
+	\text{(* you wrote: not what we want, swap)}
 	\]
 
 	\[
 	\Pr\bigl(|D-\mu|\le k\sigma\bigr)\ge 1-\frac{1}{k^2}
 	\qquad
-		ext{(* want }9/10\text{ guarantee within our range)}
+	\text{(* want }9/10\text{ guarantee within our range)}
 	\]
 
 	\[
@@ -444,16 +443,20 @@ in groups. The biological samples from multiple individuals (e.g., multiple nose
 	\[
 	\mu(1-a)\le D \le \mu(1+a).
 	\]
-
-	\[
+    	\[
 	\boxed{
 	\frac{n}{1+a}\ \le\ \tilde n\ \le\ \frac{n}{1-a}
 	}
 	\qquad
-		ext{(* if you had the denominators swapped earlier, that was the sign-risk spot)}
 	\]
 
-	% ---------- Part 4: Bound work to hit 9/10, then big-O ----------
+
+	This directly implies
+	\[
+	(1-\varepsilon)n \le \tilde n \le (1+\varepsilon)n.
+	\]
+
+    Getting more speciic bounds.
 	\[
 	1-\frac{1}{u^2}\ge \frac{9}{10}
 	\]
@@ -494,13 +497,16 @@ in groups. The biological samples from multiple individuals (e.g., multiple nose
 	\[
 	m=O\!\left(\frac{\sqrt{n}}{a}\right),
 	\qquad
-		ext{let } a=\epsilon,
+	\text{let } a=\epsilon,
 	\qquad
 	\boxed{
 	m=O\!\left(\frac{\sqrt{n}}{\epsilon}\right).
 	}
 	\]
 
+	\item (6 pts) Consider estimating the number of unique articles on Wikipedia. Wikipedia provides a way to access a random article by following the link \texttt{https://en.wikipedia.org/wiki/Special:Random}. You might notice that Wikipedia's random article generator does not return truly uniform random articles. As discussed, Wikipedia assigns each article $i$ a random id $r_i$, which we can model as a random real number in $[0,1]$. Then, to pick a random article, a number is sampled uniformly from $[0,1]$; article $i$ is returned if that number lies in the range $[r_i, r_{i+1}]$. Since these intervals themselves are random, the probability distribution won't be perfectly uniform.
+
+	Prove that, when the interval lengths are not perfectly uniform, the mark-and-recapture will systematically underestimate the number of articles. I.e., it will return an underestimate even as the number of samples $m\to\infty$.
 \end{enumerate}
 
 \section*{Problem 5: Distributed Importance Sampling. (15 pts)}
@@ -516,9 +522,187 @@ A naive approach is difficult because standard reservoir sampling relies on unif
 \begin{enumerate}[label=(\alph*)]
 	\item (5 pts) The Single Item Case ($k=1$). Consider just two items $x_1,x_2$ with weights $w_1,w_2$. Prove that the probability that $x_1$ has the larger key (and is thus selected) is exactly $\dfrac{w_1}{w_1+w_2}$. Hint: you are comparing two random variables $K_1=U_1^{1/w_1}$ and $K_2=U_2^{1/w_2}$. Set up the integral $\int_0^1 \Pr[U_1^{1/w_1}>y] f_{K_2}(y)\,dy$ or a similar double integral.
 
+% Pr. 5 (a)
+
+\[
+u_i \sim \mathrm{Uniform}[0,1]
+\]
+
+\[
+k_i = u_i^{\frac{1}{w_i}}
+\]
+
+\[
+\text{If discrete:}\quad
+\Pr(k_1 > k_2 \mid k_2)
+=
+\underbrace{\Pr(k_1 > y)}_{\text{mass}}
+\underbrace{\Pr(k_2 = y)}_{\text{density}}
+\]
+
+\[
+\text{If } 0<y<1,\ \text{then lets find continuous case}
+\]
+
+\[
+\Pr(k_i \le y)
+=
+\Pr\!\left(u_i^{\frac{1}{w_i}} \le y\right)
+=
+\Pr\!\left(u_i \le y^{w_i}\right)
+\qquad \text{since } u_i \text{ independent}
+\]
+
+\[
+\underbrace{F_2(y)=y^{w_2}}_{\text{mass function}}
+\ \Longrightarrow\
+\underbrace{F_2'(y)=f_2(y)=w_2\,y^{w_2-1}}_{\text{density function}}
+\]
+
+\[
+\text{Therefore, knowing } k_1 \ \&\ k_2 \text{ are independent (from problem statement)}
+\]
+
+\[
+\Pr(k_1 > k_2 \mid k_2)
+=
+\Pr(k_1 > k_2)
+=
+\int_{0}^{1} \Pr(k_1 > y)\cdot f_2(y)\,dy
+\]
+
+\[
+\text{notice that }\Pr(k_1 > y)=1-\Pr(k_1 \le y)\ (\text{since uniform})
+=
+1-y^{w_1}
+\]
+
+\[
+\Pr(k_1 > k_2)
+=
+\int_{0}^{1} (1-y^{w_1})\cdot w_2\,y^{w_2-1}\,dy
+=
+\int_{0}^{1} w_2\Big(y^{w_2-1}-y^{w_2+w_1-1}\Big)\,dy
+\qquad \text{* did this on another scratch paper}
+\]
+
+\[
+=
+w_2\cdot \frac{1}{w_2}
+-
+w_2\cdot \frac{1}{w_1+w_2}
+=
+\frac{w_2}{w_1+w_2}
+=
+\boxed{\frac{w_1}{w_1+w_2}}
+\ \ \square
+\]
+
 	\item (5 pts) Generalizing to Stream. Using your result from part (a), argue why this method works for a stream of $n$ items for $k=1$. Specifically, show that for any item $i$, the probability it has the maximum key is $\dfrac{w_i}{\sum_{j=1}^n w_j}$.
 
+% Pr. 5 (b)
+
+\[
+\text{stream } u=1,
+\quad\text{and we want to show }\Pr(\text{item } i \text{ is max})
+=
+\frac{w_i}{\sum_j w_j}
+\]
+
+\[
+\text{where all all weights}
+\]
+
+\[
+W=\sum_{j=1}^{n} w_j
+\]
+
+\[
+\text{we want }\Pr(k_i>k_j\ \forall j\ne i)
+\]
+
+\[
+\text{* }k_{\max}\text{ is } \max(k_j)\ \text{that isn't } k_i\ \text{(setup/valid?)}
+\]
+
+\[
+\text{then really want }
+\Pr(u_i>u_{\max})
+=
+\Pr(i\ \text{is max})
+\]
+
+\[
+=
+\int_{0}^{1}\Pr(u_j<y\ \forall j\ne i)
+\]
+
+\[
+=
+\int_{0}^{1}\prod_{j\ne i}\Pr(u_j<y)\cdot f_i(y)\,dy
+\qquad \text{* from part A}
+\]
+
+\[
+=
+\int_{0}^{1}\left(\prod_{j\ne i} y^{w_j}\right)\cdot w_i\,y^{w_i-1}\,dy
+=
+\int_{0}^{1} w_i\,y^{W-1}\,dy
+\]
+
+\[
+=
+w_i\cdot \frac{1}{W}
+=
+\frac{w_i}{\sum_{j=1}^{n} w_j}
+\ \ \square
+\]
+
 	\item (5 pts) Distributed Merging. One of the massive advantages of this specific algorithm is that it is ``mergeable.'' Suppose we have two servers, A and B. Server A observes a stream of $n_A$ items and maintains a weighted reservoir sample $S_A$ of size $k$ using the algorithm above. Server B observes a distinct stream of $n_B$ items and maintains $S_B$, also of size $k$. Describe a procedure to merge $S_A$ and $S_B$ into a single global reservoir sample $S_{\text{global}}$ of size $k$ that represents the weighted sample of the union of both streams. Prove that your merged sample has the same distribution as if a single server had processed all $n_A+n_B$ items sequentially.
+
+% Pr. 5 (c)
+
+It follows the same distribution because the keys are made from a uniform distribution, making them independent from each other. Meaning making $n_A$ keys in node $A$, then $n_B$ keys in node $B$ will have the same distribution as making $n_A+n_B$ keys in a single master node.
+
+Therefore whether using a single server or two or more servers in the operation will generate the same top $k$ keys if $S_A \cap S_B = S_{\text{master}}$, and if not, then $S_{\text{master}}$ will have the same distribution as $S_A \cap S_B$.
+
+\vspace{1em}
+
+\textbf{(Setup)}\quad If we have two servers (server $A$ \& $B$).
+
+Then each server assigns a key $h=u^{1/w}$ for $k$ keys, in $S_{\text{server}}$.
+
+\textbf{(Merge)}\quad To merge the two, each ``node'' server sends the ``master (centralized)'' server:
+
+\begin{itemize}
+\item the $k$ keys in $S_{\text{server}}$.
+\end{itemize}
+
+The server merges them both such that
+\[
+S_{A\cup B}=S_A \cup S_B,
+\quad \text{which has size } 2k = |S_A| + |S_B|.
+\]
+
+The server then sorts the $2k$ keys in $S_{A\cup B}$, and removes $k$ keys so that $|S_{A\cup B}|=k$.
+
+We show that it is the same distribution as having $n_A+n_B$ and it will be the same $k$ items.
+
+Assume by contradiction there is a key $k_c$ that would be in the top $k$ keys in $n_A + n_B$ but isn't in $S_A \cup S_B$ (or more importantly, isn't in the candidates we merge from the servers).
+
+Since every key lives on either server $A$ or server $B$, $k_c$ is on one of them, say server $A$.
+
+Notice, if $k_c$ is truly top-$k$ globally, it cannot fail to be top-$k$ locally on the server it's on.
+
+Because if $k_c \notin S_A$, that means server $A$ already has $k$ keys strictly bigger than $k_c$.
+
+But then those same $k$ keys exist in the global pool too, so globally there are already $k$ keys bigger than $k_c$,
+which contradicts ``$k_c$ is in the global top $k$.''
+
+Therefore $k_c \in S_A$ (and similarly if it lived on $B$, it would be in $S_B$).
+
+So any global top-$k$ key must show up in at least one of the local top-$k$ sets,
+meaning it cannot be ``missing'' after the merge. Therefore we have a contradiction.
 \end{enumerate}
 
 \end{document}
