@@ -507,6 +507,46 @@ Genuinly tried these problems on paper. I used AI to explain but I didn't totall
 	\item (6 pts) Consider estimating the number of unique articles on Wikipedia. Wikipedia provides a way to access a random article by following the link \texttt{https://en.wikipedia.org/wiki/Special:Random}. You might notice that Wikipedia's random article generator does not return truly uniform random articles. As discussed, Wikipedia assigns each article $i$ a random id $r_i$, which we can model as a random real number in $[0,1]$. Then, to pick a random article, a number is sampled uniformly from $[0,1]$; article $i$ is returned if that number lies in the range $[r_i, r_{i+1}]$. Since these intervals themselves are random, the probability distribution won't be perfectly uniform.
 
 	Prove that, when the interval lengths are not perfectly uniform, the mark-and-recapture will systematically underestimate the number of articles. I.e., it will return an underestimate even as the number of samples $m\to\infty$.
+
+
+
+\medskip
+
+\noindent Since not uniform hashing and some $\bar{p}_i = p_i + e_i$, with $e_i>0$,
+then those indexes with $e_i>0$ are more likely to be duplicates!
+
+\begin{align*}
+\mathbb{E}[D]_{\text{not uniform}}
+&= \sum_{1\le i<j\le m} \Pr(\bar{p}_x=\bar{p}_y) \\
+&= \binom{m}{2}\sum_{i=1}^{n}\Pr(\bar{p}_x=\bar{p}_y) \\
+&= \binom{m}{2}\sum_{i=1}^{n}\bar{p}_i^{\,2} \\
+&= \binom{m}{2}\sum_{i=1}^{n}(p_i+e_i)^2 \\
+&= \binom{m}{2}\sum_{i=1}^{n}\left(p_i^2+2p_ie_i+e_i^2\right) \\
+&= \binom{m}{2}\sum_{i=1}^{n}\left(\frac{1}{n^2}+2\frac{1}{n}e_i\right) \\
+&= \binom{m}{2}\frac{1}{n} + 2\sum_{i=1}^{n} e_i .
+\end{align*}
+
+\[
+\text{Therefore }\ \mathbb{E}[D]_{\text{not uniform}} > \mathbb{E}[D]_{\text{uniform}}.
+\]
+
+\medskip
+
+\noindent In conclusion, as $m\to\infty$,
+\[
+\hat{n}_{\text{true}}=\frac{m(m-1)}{2\,\mathbb{E}[D_{\text{uniform}}]}
+\quad\Rightarrow\quad
+\frac{m(m-1)}{2\,\mathbb{E}[D_{\text{uniform}}]}
+>
+\frac{m(m-1)}{2\,\mathbb{E}[D_{\text{not uniform}}]}
+=
+\hat{n}_{\text{not uniform}}.
+\]
+
+\noindent Therefore $\hat{n}_{\text{not uniform}}$ will be less than $\hat{n}_{\text{true}}$
+systematically.
+
+\hfill (where $\hat{n}$ is the number articles estimated)
 \end{enumerate}
 
 \section*{Problem 5: Distributed Importance Sampling. (15 pts)}
