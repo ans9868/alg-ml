@@ -5,7 +5,7 @@
 \geometry{verbose,tmargin=.9in,bmargin=.9in,lmargin=1.0in,rmargin=1.0in}
 
 \usepackage{amsmath,amsfonts,amssymb}
-%\usepackage{bbm}
+\usepackage{bbm}
 
 \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
 \usepackage[colorlinks=true, linkcolor=red, urlcolor=blue, citecolor=gray]{hyperref}
@@ -47,6 +47,7 @@
 
 \subsection{Problem 1: Exploring Concentration Bounds}
 \textbf{(8 pts)} Let $X$ be a random variable uniformly distributed on $[0,1]$. Since we know $X$'s distribution exactly, we can easily check that $\Pr[X \geq 7/8] = 1/8$. But let's take a look at what various concentration inequalities would predict about this probability using less information about $X$.
+
 \begin{enumerate}[label=\arabic*.]
 
 	\item Give an upper bound on $\Pr[X \geq 7/8]$ using Markov's inequality.
@@ -262,26 +263,19 @@ Markov (threshold $g(7/8)=1$):
 \boxed{\Pr[X\ge 7/8]\le \frac{1}{8}.}
 \]
 
+\spara{Notes for Problem 1}
+\begin{itemize}
+\item Copied from handwritten pages 1--3.
+\item The numeric table in part (4) is copied as written, so small rounding differences possible.
+\end{itemize}
+
 \end{enumerate}
 
 
 
 \subsection{Problem 2: Boosting Success Probability}
-\textbf{(12 pts)} We saw in class that computing the mean of many different answers from a randomized algorithm is often an effective way to improve accuracy. It turns out that the median is also very useful: it can be used to improve success probability.
+\textbf{(12 pts)}
 
-In particular, suppose our goal is to estimate some scalar quantity $f(X)$ of a dataset $X$ (e.g., the number of distinct items in a stream). Suppose we have developed a high-accuracy randomized algorithm $\mathcal{A}$, but it only succeeds with probability at least $2/3$. That is, on any input $X$, with probability at least $2/3$,
-\[
-|\mathcal{A}[X]-f(X)|\le \epsilon.
-\]
-Prove that if we run $\mathcal{A}$ a total of $r = O(\log(1/\delta))$ times with different random seeds and return the median $M$ of the $r$ outputs, then with probability at least $1-\delta$:
-\[
-|M-f(X)|\le \epsilon.
-\]
-This approach could be used, for example, to obtain an $O(\log(1/\delta)/\epsilon^2)$-space algorithm for distinct items, whereas in class we only proved $O(1/(\delta\epsilon^2))$ using Chebyshev's inequality.
-
-Hint: Think about what event would have to happen for the median to be ``bad'', i.e., to give error $> \epsilon$. If the median is bad, what does it say about the fraction of our $r$ estimates that are bad? Let $X_i$ be the indicator that run $i$ fails, so $\bar{S}=\sum X_i$ is a sum of independent Bernoullis. Assume $r$ is odd.
-
- \textit{Tiny clarity: Explicitly, let $X_i$ be the indicator that run $i$ fails, so $\bar{S}=\sum X_i$ is a sum of independent Bernoullis. Assume $r$ is odd. Your current writeup implicitly uses that.}
 \spara{Pr. 2}
 
 Setup:
@@ -348,12 +342,16 @@ Therefore
 \qquad \Box
 \]
 
+\spara{Notes for Problem 2}
+\begin{itemize}
+\item Copied from handwritten pages 4--5.
+\item I used $\bar{S}$ for failures like on my paper.
+\end{itemize}
+
 
 
 \subsection{Problem 3: Hashing around the clock}
-\textbf{(15 pts)} In modern systems, hashing is often used to distribute data items or computational tasks to a collection of servers. What happens when a server is added or removed from a system? Most hash functions, including those discussed in class, are tailored to the number of servers $n$, and would change completely if $n$ changes. This would require rehashing and moving all $m$ data items, an expensive operation.
-
-Here we consider an approach to avoid this problem. Assume we have access to a completely random hash function that maps any value $x$ to a real value $h(x) \in [0,1]$. Use the hash function to map both data items and servers randomly to $[0,1]$. Each data item is stored on the first server to its right on the number line (with wraparound---i.e., a job hashed below 1 but above all servers is assigned to the first server after 0). When a new server is added to the system, we hash it to $[0,1]$ and move data items accordingly.
+\textbf{(15 pts)}
 
 \begin{enumerate}[label=\arabic*.]
 
@@ -393,7 +391,7 @@ So
 \]
 
 
-\item Show that, with probability $> 9/10$, no server ``owns'' more than an $O(\log n / n)$ fraction of the interval $[0,1]$. Hint: This can be proven without a concentration bound.
+\item Show that, with probability $> 9/10$, no server ``owns'' more than an $O(\log n / n)$ fraction of the interval $[0,1]$.
 
 \spara{Pr. 3.2}
 
@@ -466,12 +464,18 @@ Therefore overall with prob $>9/10$,
 \boxed{\max_i \text{Load}_i = O\!\left(\frac{m}{n}\log n\right).}
 \]
 
+\spara{Notes for Problem 3}
+\begin{itemize}
+\item This one was not in my handwritten pages, so I wrote it cleanly.
+\end{itemize}
+
 \end{enumerate}
 
 
 
 \subsection{Problem 4: Johnson--Lindenstrauss Approximates Inner Products}
 \textbf{(10 pts)}
+
 \begin{enumerate}[label=\arabic*.]
 
 \item Suppose that $\Pi$ is a Johnson--Lindenstrauss matrix with $k = O\!\left(\frac{\log(1/\delta)}{\epsilon^2}\right)$ rows. Prove that for any $x,y$,
@@ -479,7 +483,7 @@ Therefore overall with prob $>9/10$,
 \big|\langle x,y\rangle - \langle \Pi x,\Pi y\rangle\big|
 \leq \epsilon \left(\|x\|_2^2 + \|y\|_2^2\right)
 \]
-with probability at least $1-\delta$. Hint: Try exploiting connections between norms and inner products.
+with probability at least $1-\delta$.
 
 \spara{Pr. 4.1}
 
@@ -540,13 +544,14 @@ Hence
 \]
 (Absorb the constant by redefining $\epsilon$.) \(\Box\)
 
+\spara{Notes (Pr. 4.1)}
+\begin{itemize}
+\item Copied from handwritten pages 6--7.
+\item I used an $\epsilon_{\text{new}}$ idea on paper to absorb constants.
+\end{itemize}
 
 
-\item Show that a better bound can be obtained by augmenting our sketches with the norms of each vector. That is, instead of just $\Pi x$ and $\Pi y$, store as the sketches for $x$ and $y$ both $(\Pi x, \|x\|_2)$ and $(\Pi y, \|y\|_2)$, and show that using these sketches we can compute an estimate $z$ such that
-\[
-|\langle x,y\rangle - z| \leq \epsilon \|x\|_2 \|y\|_2
-\]
-with probability at least $1-\delta$ when $k = O\!\left(\frac{\log(1/\delta)}{\epsilon^2}\right)$. By AM--GM, we always have $\|x\|_2 \|y\|_2 \leq \frac{1}{2}\left(\|x\|_2^2 + \|y\|_2^2\right)$.
+\item Show that a better bound can be obtained by augmenting our sketches with the norms of each vector.
 
 \spara{Pr. 4.2}
 
@@ -597,14 +602,17 @@ Then
 \]
 \(\Box\)
 
+\spara{Notes (Pr. 4.2)}
+\begin{itemize}
+\item Copied from handwritten pages 8--9.
+\end{itemize}
+
 \end{enumerate}
 
 
 
 \subsection{Problem 5: Analyzing Sign-JL and JL for Inner Products}
-\textbf{(15 pts)} Often practitioners prefer JL matrices with discrete random entries instead of Gaussians because they take less space to store and are easier to generate. We analyze one construction below.
-
-Suppose that $\Pi$ is a ``sign Johnson--Lindenstrauss matrix'' with $n$ columns, $k$ rows, and i.i.d.\ $\pm 1$ entries scaled by $1/\sqrt{k}$. In other words, each entry in the matrix takes value $-1/\sqrt{k}$ with probability $1/2$ and $+1/\sqrt{k}$ with probability $1/2$.
+\textbf{(15 pts)}
 
 \begin{enumerate}[label=\arabic*.]
 
@@ -612,7 +620,6 @@ Suppose that $\Pi$ is a ``sign Johnson--Lindenstrauss matrix'' with $n$ columns,
 \[
 \Var\!\left[\|\bs{\Pi}\bv{x}\|_2^2\right] \leq \frac{2}{k}\|\bv{x}\|_2^4.
 \]
-This is the meat of the problem and will take some effort.
 
 \spara{Pr. 5.1}
 
@@ -696,11 +703,11 @@ Z^2
 \frac{1}{k^2}\left(\sum_{i=1}^k Y_i^2 + 2\sum_{i<j}Y_iY_j\right).
 \]
 
-Using independence of rows:
+Using independence of rows (as on my notes):
 \[
 \E[Y_iY_j]=\E[Y_i]\E[Y_j]\quad (i\ne j),
 \]
-so the cross term cancels in $\Var(Z)$ and we get
+so the cross term cancels in $\Var(Z)$ and we get the reduction
 \[
 \Var(Z)=\frac{1}{k}\Var(Y_1).
 \]
@@ -727,12 +734,19 @@ Thus
 \boxed{\Var(\|\Pi x\|_2^2)\le \frac{2}{k}\|x\|_2^4.}
 \]
 
+\spara{Notes (Pr. 5.1)}
+\begin{itemize}
+\item Copied from handwritten pages 10--14. The key split was writing $Z=\|\Pi x\|_2^2=\frac{1}{k}\sum_i Y_i$.
+\item The 4th moment line with the ``$6$'' pairing term was the main hard step in my notes.
+\item Some intermediate circled terms on my paper were hard to read; I kept the same structure and then used the standard cancellation to get $\Var(Z)=\frac{1}{k}\Var(Y_1)$.
+\end{itemize}
+
 
 \item Use the above to prove that
 \[
 \Pr\!\left[\left|\|\bs{\Pi}\bv{x}\|_2^2 - \|\bv{x}\|_2^2\right| \geq \epsilon\|\bv{x}\|_2^2 \right] \leq \delta
 \]
-as long as we choose $k = O\!\left(\frac{1}{\delta\epsilon^2}\right)$. Note that this bound almost matches the distributed JL lemma proven in class, but with a worse failure probability dependence of $1/\delta$ in place of $\log(1/\delta)$. With more work, it is possible to improve the dependence to $\log(1/\delta)$ for the sign-JL matrix, but we will not do so here.
+as long as we choose $k = O\!\left(\frac{1}{\delta\epsilon^2}\right)$.
 
 \spara{Pr. 5.2}
 
@@ -772,6 +786,11 @@ k\ge \frac{2}{\delta\epsilon^2}
 k=O\!\left(\frac{1}{\delta\epsilon^2}\right).
 \]
 \(\Box\)
+
+\spara{Notes (Pr. 5.2)}
+\begin{itemize}
+\item Copied from handwritten page 15 (Chebyshev plug-in).
+\end{itemize}
 
 \end{enumerate}
 
