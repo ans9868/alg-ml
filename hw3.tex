@@ -32,6 +32,9 @@
 \DeclareMathOperator{\cut}{cut}
 \DeclareMathOperator{\tr}{tr}
 
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+\newcommand{\ip}[2]{\left\langle #1,\, #2\right\rangle}
+
 \definecolor{nyuDarkPurple}{HTML}{330662}
 \definecolor{nyuOfficialPurple}{HTML}{57068c}
 
@@ -86,7 +89,326 @@ Furthermore, suppose that the $\ell_2$ distance of each point in $X$ and $Y$ to 
 	
 	\item Show that if we use a Johnson-Lindenstrauss map $\Pi$ to reduce our data points to $O(\log n/\epsilon^2)$ dimensions, then the dimension reduced data can still be separated by a hyperplane with margin $\epsilon/4$, with high probability (say $> 9/10$).
 \end{enumerate}
- 
+
+\spara{1.1}
+
+\textbf{Setup (hyperplane + sides).}
+A hyperplane in $\R^d$ is defined by a unit normal vector $a\in\R^d$ with $\|a\|_2=1$ and a scalar $c\in\R$:
+\[
+H := \{\,h\in\R^d : \langle a,h\rangle = c\,\}.
+\]
+Given a point $z\in\R^d$, there are three cases:
+\[
+\langle a,z\rangle = c \ \Longrightarrow\  z\in H \ (\text{on the hyperplane}),
+\]
+\[
+\langle a,z\rangle > c \ \Longrightarrow\  z \ \text{is on the ``$+$'' side of }H,
+\]
+\[
+\langle a,z\rangle < c \ \Longrightarrow\  z \ \text{is on the ``$-$'' side of }H.
+\]
+
+\medskip
+\textbf{Why $c$ matters even though the hyperplane is infinite.}
+I like to imagine $a$ as the \emph{orientation} of the hyperplane (like picking a direction/basis that tells you which way the plane ``faces''), while $c$ is an \emph{offset along that direction}. Changing $a$ rotates the hyperplane; changing $c$ slides it forward/backward along the normal direction $a$.
+
+\medskip
+\textbf{Signed vs.\ unsigned distance.}
+Define the \emph{signed distance} (for unit $a$) by
+\[
+\text{signed-dist}(z,H) := \langle a,z\rangle - c.
+\]
+It is positive on the $+$ side, negative on the $-$ side, and $0$ on the hyperplane. The usual (unsigned) Euclidean distance is the absolute value:
+\[
+\text{dist}(z,H) := |\langle a,z\rangle - c|.
+\]
+
+\medskip
+\textbf{Finding the closest point on the hyperplane.}
+The closest point to $z$ on $H$ is found by moving from $z$ in the normal direction $a$:
+\[
+h^* := z - t a,
+\]
+where $t\in\R$ is chosen so that $h^*$ lies on the hyperplane:
+\[
+\langle a,h^*\rangle = c.
+\]
+Plugging in $h^*=z-ta$:
+\[
+\langle a, z-ta\rangle = c
+\quad\Longrightarrow\quad
+\langle a,z\rangle - t\langle a,a\rangle = c.
+\]
+Since $\|a\|_2=1$, we have $\langle a,a\rangle=1$, hence
+\[
+t = \langle a,z\rangle - c.
+\]
+Therefore,
+\[
+h^* = z - (\langle a,z\rangle - c)a.
+\]
+Now compute the distance:
+\[
+\|z-h^*\|_2
+=
+\|(\langle a,z\rangle - c)a\|_2
+=
+|\langle a,z\rangle - c|\,\|a\|_2
+=
+|\langle a,z\rangle - c|.
+\]
+So we get the clean formula:
+\[
+\boxed{\text{dist}(z,H)=|\langle a,z\rangle - c| \quad \text{when }\|a\|_2=1.}
+\]
+
+\medskip
+\textbf{Personal intuition note.}
+This is both intuitive and not intuitive. It is intuitive in the sense that you have infinitely many different (geometric) ways to describe a set of objects, and you can create any two sub-groups of the objects you want by choosing the correct way to define the two groups. It is not intuitive because infinity is not intuitive haha.
+
+\medskip
+\textbf{Finish (margin $\epsilon$ $\Rightarrow$ inner product gap).}
+The margin assumption says that every point in $X\cup Y$ has Euclidean distance at least $\epsilon$ from the hyperplane $H$. Using the distance formula above,
+\[
+\forall z\in X\cup Y:\quad \mathrm{dist}(z,H)=|\langle a,z\rangle-c|\ge \epsilon.
+\]
+
+Now use which side each set lies on.
+
+\begin{itemize}
+\item If $x\in X$, we are given $\langle a,x\rangle>c$, so $\langle a,x\rangle-c>0$ and hence
+\[
+|\langle a,x\rangle-c|=\langle a,x\rangle-c\ge \epsilon
+\quad\Longrightarrow\quad
+\boxed{\langle a,x\rangle \ge c+\epsilon.}
+\]
+
+\item If $y\in Y$, we are given $\langle a,y\rangle<c$, so $\langle a,y\rangle-c<0$ and hence
+\[
+|\langle a,y\rangle-c|=-(\langle a,y\rangle-c)=c-\langle a,y\rangle\ge \epsilon
+\quad\Longrightarrow\quad
+\boxed{\langle a,y\rangle \le c-\epsilon.}
+\]
+\end{itemize}
+
+(Conversely, these inequalities immediately imply $|\langle a,z\rangle-c|\ge \epsilon$, so the statements are equivalent.)
+
+\spara{Pr. 1(b) Johnson--Lindenstrauss preserves separability up to constant-factor margin loss}
+
+From part (a), the margin assumption implies
+\[
+\forall x\in X,\qquad \langle a,x\rangle \ge c+\epsilon,
+\]
+and
+\[
+\forall y\in Y,\qquad \langle a,y\rangle \le c-\epsilon.
+\]
+
+We will show that after applying a Johnson--Lindenstrauss map $\Pi$ down to
+\[
+k = O\!\left(\frac{\log n}{\epsilon^2}\right)
+\]
+dimensions, the projected points $\Pi X$ and $\Pi Y$ are still separable by a hyperplane with margin at least $\epsilon/4$, with probability at least $9/10$.
+
+\medskip
+\textbf{Step 1: Apply JL to the right finite set.}
+Consider the finite set
+\[
+S := \{0,a\}\cup X\cup Y.
+\]
+Its size is $|S|=n+2$.
+
+Apply the Johnson--Lindenstrauss lemma to $S$ with distortion parameter $\alpha>0$ to be chosen later. Then, with probability at least $9/10$, for all $u,v\in S$,
+\[
+(1-\alpha)\|u-v\|_2^2 \le \|\Pi u-\Pi v\|_2^2 \le (1+\alpha)\|u-v\|_2^2,
+\]
+provided that
+\[
+k = O\!\left(\frac{\log |S|}{\alpha^2}\right)
+= O\!\left(\frac{\log n}{\alpha^2}\right).
+\]
+
+Since $0\in S$, this also gives norm preservation:
+\[
+(1-\alpha)\|u\|_2^2 \le \|\Pi u\|_2^2 \le (1+\alpha)\|u\|_2^2
+\qquad \text{for all }u\in S.
+\]
+In particular, because $\|a\|_2=\|x\|_2=\|y\|_2=1$,
+\[
+1-\alpha \le \|\Pi a\|_2^2 \le 1+\alpha,
+\qquad
+1-\alpha \le \|\Pi z\|_2^2 \le 1+\alpha
+\quad (z\in X\cup Y).
+\]
+
+\medskip
+\textbf{Step 2: Inner products with $a$ are approximately preserved.}
+For any $z\in X\cup Y$, use the identity
+\[
+\langle u,v\rangle
+=
+\frac{\|u\|_2^2+\|v\|_2^2-\|u-v\|_2^2}{2}.
+\]
+Hence
+\[
+\langle \Pi a,\Pi z\rangle
+=
+\frac{\|\Pi a\|_2^2+\|\Pi z\|_2^2-\|\Pi(a-z)\|_2^2}{2}.
+\]
+Compare this with
+\[
+\langle a,z\rangle
+=
+\frac{\|a\|_2^2+\|z\|_2^2-\|a-z\|_2^2}{2}
+=
+\frac{1+1-\|a-z\|_2^2}{2}.
+\]
+Subtracting gives
+\[
+\big|\langle \Pi a,\Pi z\rangle - \langle a,z\rangle\big|
+\le
+\frac{
+\big|\|\Pi a\|_2^2-1\big|
++
+\big|\|\Pi z\|_2^2-1\big|
++
+\big|\|\Pi(a-z)\|_2^2-\|a-z\|_2^2\big|
+}{2}.
+\]
+Now:
+\[
+\big|\|\Pi a\|_2^2-1\big|\le \alpha,
+\qquad
+\big|\|\Pi z\|_2^2-1\big|\le \alpha,
+\]
+and also
+\[
+\big|\|\Pi(a-z)\|_2^2-\|a-z\|_2^2\big|
+\le
+\alpha \|a-z\|_2^2.
+\]
+Since $a$ and $z$ are unit vectors,
+\[
+\|a-z\|_2 \le \|a\|_2+\|z\|_2 = 2,
+\qquad
+\|a-z\|_2^2 \le 4.
+\]
+So
+\[
+\big|\|\Pi(a-z)\|_2^2-\|a-z\|_2^2\big|\le 4\alpha.
+\]
+Therefore
+\[
+\big|\langle \Pi a,\Pi z\rangle - \langle a,z\rangle\big|
+\le
+\frac{\alpha+\alpha+4\alpha}{2}
+=
+3\alpha.
+\]
+
+Choose
+\[
+\alpha = \frac{\epsilon}{12}.
+\]
+Then
+\[
+\boxed{
+\big|\langle \Pi a,\Pi z\rangle - \langle a,z\rangle\big|
+\le \frac{\epsilon}{4}
+\qquad \text{for all } z\in X\cup Y.
+}
+\]
+Since $\alpha=\epsilon/12$, the required dimension is
+\[
+k = O\!\left(\frac{\log n}{\alpha^2}\right)
+= O\!\left(\frac{\log n}{\epsilon^2}\right).
+\]
+
+\medskip
+\textbf{Step 3: Build the separating hyperplane in the compressed space.}
+Define
+\[
+b := \frac{\Pi a}{\|\Pi a\|_2},
+\qquad
+c' := \frac{c}{\|\Pi a\|_2}.
+\]
+Then $b$ is a unit vector, so it defines a hyperplane in the compressed space.
+
+Take any $x\in X$. From part (a),
+\[
+\langle a,x\rangle \ge c+\epsilon.
+\]
+Using the inner product approximation from Step 2,
+\[
+\langle \Pi a,\Pi x\rangle
+\ge
+\langle a,x\rangle - \frac{\epsilon}{4}
+\ge
+c+\epsilon-\frac{\epsilon}{4}
+=
+c+\frac{3\epsilon}{4}.
+\]
+Hence
+\[
+\langle b,\Pi x\rangle - c'
+=
+\frac{\langle \Pi a,\Pi x\rangle - c}{\|\Pi a\|_2}
+\ge
+\frac{3\epsilon/4}{\|\Pi a\|_2}.
+\]
+
+Now take any $y\in Y$. From part (a),
+\[
+\langle a,y\rangle \le c-\epsilon.
+\]
+Again using Step 2,
+\[
+\langle \Pi a,\Pi y\rangle
+\le
+\langle a,y\rangle + \frac{\epsilon}{4}
+\le
+c-\epsilon+\frac{\epsilon}{4}
+=
+c-\frac{3\epsilon}{4}.
+\]
+So
+\[
+c' - \langle b,\Pi y\rangle
+=
+\frac{c-\langle \Pi a,\Pi y\rangle}{\|\Pi a\|_2}
+\ge
+\frac{3\epsilon/4}{\|\Pi a\|_2}.
+\]
+
+Thus every projected point from $X$ lies on one side of the new hyperplane and every projected point from $Y$ lies on the other side.
+
+\medskip
+\textbf{Step 4: Lower-bound the new margin by $\epsilon/4$.}
+From norm preservation for $a$,
+\[
+\|\Pi a\|_2^2 \le 1+\alpha \le 2,
+\]
+so
+\[
+\|\Pi a\|_2 \le \sqrt{2}.
+\]
+Therefore
+\[
+\frac{3\epsilon/4}{\|\Pi a\|_2}
+\ge
+\frac{3\epsilon/4}{\sqrt{2}}
+>
+\frac{\epsilon}{4}.
+\]
+So every projected point is at distance at least $\epsilon/4$ from the new hyperplane.
+
+Hence, with probability at least $9/10$,
+\[
+\boxed{
+\Pi X \text{ and } \Pi Y \text{ are still separable by a hyperplane with margin } \epsilon/4.
+}
+\qquad \Box
+\]
 
 
 
@@ -100,7 +422,6 @@ In particular, let $\bv{x}_1, \ldots, \bv{x}_k \in \R^d$ be i.i.d. random vector
 
 % --- PS3 Problem 2: Concentration of random vectors (clean writeup) ---
 
-\subsection*{Problem 2: Concentration of random vectors}
 
 \textbf{Given.}
 Let $x_1,\dots,x_k \in \mathbb{R}^d$ be i.i.d.\ random vectors such that
@@ -278,6 +599,195 @@ Prove that, if we run gradient descent for $T = O(R^2G^2/\epsilon^2)$ steps usin
 
 \textbf{Hint:} Prove that our distance from the optimum $\|\bv{x}^{(i)} - \bv{x}^*\|_2$ {always decreases} with this choice of step size, and the decrease is larger if our gap from the objective value $f(\bv{x}^{(i)}) - f(\bv{x}^{*})$ is larger.
 
+% --- PS3 Problem 3: Polyak step size GD (ending / main proof block) ---
+
+
+\textbf{Step 0: Setup / notation.}
+For each iteration $i$, define
+\[
+g_i := \nabla f(x^{(i)}),
+\qquad
+h_i := f(x^{(i)}) - f(x^*) \ (\ge 0),
+\qquad
+\eta_i := \frac{h_i}{\norm{g_i}_2^2}.
+\]
+Gradient descent update:
+\[
+x^{(i+1)} = x^{(i)} - \eta_i g_i.
+\]
+
+\medskip
+\textbf{Step 1: Convexity gives $h_i \le \langle g_i, x^{(i)}-x^*\rangle$.}
+For convex differentiable $f$, the supporting-hyperplane inequality says:
+\[
+f(y) \ge f(x) + \langle \nabla f(x),\, y-x\rangle
+\qquad \text{for all }x,y.
+\]
+Plug in $x=x^{(i)}$ and $y=x^*$:
+\[
+f(x^*) \ge f(x^{(i)}) + \langle \nabla f(x^{(i)}),\, x^* - x^{(i)}\rangle
+= f(x^{(i)}) - \langle g_i,\, x^{(i)}-x^*\rangle.
+\]
+Rearrange:
+\[
+\boxed{
+h_i = f(x^{(i)})-f(x^*) \le \langle g_i,\, x^{(i)}-x^*\rangle.
+}
+\]
+
+\medskip
+\textbf{Step 2 (intuition): Cauchy--Schwarz.}
+By Cauchy--Schwarz,
+\[
+\langle g_i,\, x^{(i)}-x^*\rangle \le \norm{g_i}_2\,\norm{x^{(i)}-x^*}_2,
+\]
+so combining with Step 1 gives the intuition:
+\[
+\boxed{
+h_i \le \norm{g_i}_2\,\norm{x^{(i)}-x^*}_2.
+}
+\]
+(Meaning: the function gap is at most ``gradient magnitude $\times$ Euclidean distance to optimum.'')
+
+\medskip
+\textbf{Step 3: Distance recursion (expand the square).}
+Subtract $x^*$ from the update and square norms:
+\[
+\norm{x^{(i+1)}-x^*}_2^2
+=
+\norm{x^{(i)}-x^*-\eta_i g_i}_2^2.
+\]
+Expanding,
+\[
+\norm{x^{(i+1)}-x^*}_2^2
+=
+\norm{x^{(i)}-x^*}_2^2
+-2\eta_i\langle g_i, x^{(i)}-x^*\rangle
++\eta_i^2\norm{g_i}_2^2.
+\]
+Using Step 1, $\langle g_i, x^{(i)}-x^*\rangle \ge h_i$, hence
+\[
+\norm{x^{(i+1)}-x^*}_2^2
+\le
+\norm{x^{(i)}-x^*}_2^2
+-2\eta_i h_i
++\eta_i^2\norm{g_i}_2^2.
+\]
+
+\medskip
+\textbf{Step 4: Plug in Polyak step size $\eta_i$.}
+Given $\eta_i=\frac{h_i}{\norm{g_i}_2^2}$, compute:
+\[
+2\eta_i h_i
+=
+2\cdot \frac{h_i}{\norm{g_i}_2^2}\cdot h_i
+=
+\frac{2h_i^2}{\norm{g_i}_2^2},
+\qquad
+\eta_i^2\norm{g_i}_2^2
+=
+\left(\frac{h_i}{\norm{g_i}_2^2}\right)^2\norm{g_i}_2^2
+=
+\frac{h_i^2}{\norm{g_i}_2^2}.
+\]
+So
+\[
+-2\eta_i h_i + \eta_i^2\norm{g_i}_2^2
+=
+-\frac{h_i^2}{\norm{g_i}_2^2}.
+\]
+Therefore,
+\[
+\boxed{
+\norm{x^{(i+1)}-x^*}_2^2
+\le
+\norm{x^{(i)}-x^*}_2^2
+-\frac{h_i^2}{\norm{g_i}_2^2}.
+}
+\]
+This is the key progress inequality.
+
+\medskip
+\textbf{Step 5: Use the gradient bound $\norm{g_i}_2\le G$.}
+If $\norm{g_i}_2\le G$, then $\norm{g_i}_2^2\le G^2$, hence
+\[
+\frac{h_i^2}{\norm{g_i}_2^2} \ge \frac{h_i^2}{G^2}.
+\]
+Thus,
+\[
+\boxed{
+\norm{x^{(i+1)}-x^*}_2^2
+\le
+\norm{x^{(i)}-x^*}_2^2
+-\frac{h_i^2}{G^2}.
+}
+\]
+Rearrange:
+\[
+\frac{h_i^2}{G^2}
+\le
+\norm{x^{(i)}-x^*}_2^2 - \norm{x^{(i+1)}-x^*}_2^2.
+\]
+
+\medskip
+\textbf{Step 6: Telescope (sum over $i$).}
+Sum from $i=0$ to $T-1$:
+\[
+\sum_{i=0}^{T-1}\frac{h_i^2}{G^2}
+\le
+\sum_{i=0}^{T-1}\Big(\norm{x^{(i)}-x^*}_2^2 - \norm{x^{(i+1)}-x^*}_2^2\Big).
+\]
+The right-hand side telescopes:
+\[
+\sum_{i=0}^{T-1}(A_i-A_{i+1})=A_0-A_T,
+\quad
+A_i:=\norm{x^{(i)}-x^*}_2^2.
+\]
+So
+\[
+\sum_{i=0}^{T-1}\frac{h_i^2}{G^2}
+\le
+\norm{x^{(0)}-x^*}_2^2 - \norm{x^{(T)}-x^*}_2^2
+\le
+\norm{x^{(0)}-x^*}_2^2
+\le
+R^2.
+\]
+Therefore,
+\[
+\boxed{
+\sum_{i=0}^{T-1} h_i^2 \le R^2G^2.
+}
+\]
+
+\medskip
+\textbf{Step 7: Convert to best-iterate bound (min $\le$ average).}
+Since $h_i^2\ge 0$,
+\[
+\min_{0\le i<T} h_i^2
+\le
+\frac{1}{T}\sum_{i=0}^{T-1}h_i^2
+\le
+\frac{R^2G^2}{T}.
+\]
+Hence,
+\[
+\boxed{
+\min_{0\le i<T} h_i \le \frac{RG}{\sqrt{T}}.
+}
+\]
+To ensure $\min_{i<T} h_i \le \varepsilon$, it suffices to choose
+\[
+\frac{RG}{\sqrt{T}} \le \varepsilon
+\quad\Longleftrightarrow\quad
+T \ge \frac{R^2G^2}{\varepsilon^2}.
+\]
+Let $\hat x$ be the best iterate among the first $T$ (i.e., attaining $\min_{i<T} h_i$). Then
+\[
+f(\hat x)-f(x^*) = \min_{0\le i<T} h_i \le \varepsilon.
+\qquad \Box
+\]
+
 
 \subsection{Problem 4: Separation Oracles}
 \textbf{(12 pts)} Describe efficient separation oracles for each of the following families of convex sets.  Here, ``efficient'' means linear time plus $O(1)$ calls to any additional oracles provided to you.
@@ -298,10 +808,319 @@ Prove that, if we run gradient descent for $T = O(R^2G^2/\epsilon^2)$ steps usin
 \end{enumerate}
 Above you may wish to use the following fact that was stated but not formally proven in class: for any point $\bv{x}$, convex set $A$, and $\bv{z}\in A$, $\|\bv{z}-\text{Proj}_A(\bv{x})\|_2 \leq \|\bv{z} - \bv{x}\|_2$.
 
+\spara{4.a}
 
+\textbf{Given a point $x$:}
+\begin{enumerate}
+	\item Query the separation oracle for $A$.
+	\begin{itemize}
+		\item If $x\notin A$, return the separator for $A$.
+	\end{itemize}
+	\item Otherwise, query the separation oracle for $B$.
+	\begin{itemize}
+		\item If $x\notin B$, return the separator for $B$.
+	\end{itemize}
+	\item If both oracles accept, then $x\in A\cap B$, so return ``feasible.''
+\end{enumerate}
 
+\textbf{Correctness.}
+This is correct because
+\[
+A\cap B \subseteq A
+\quad\text{and}\quad
+A\cap B \subseteq B.
+\]
+Hence any hyperplane separating $x$ from $A$ also separates $x$ from $A\cap B$, and similarly for $B$.
 
+\textbf{Efficiency.}
+The procedure uses at most two oracle calls, so it is efficient and $O(1)$.
 
+\spara{Pr. 4(b)}
 
+\textbf{Setup / what a separation oracle must return. ( this is a bit of a reminder ot myself of the definition of a separation oracle.)}
+Let
+\[
+A := \{z\in\mathbb{R}^d : \|z\|_1 \le 1\}.
+\]
+Given a query point \(x\in\mathbb{R}^d\), if \(x\notin A\), we must return a hyperplane of the form
+\[
+\langle g,z\rangle = \beta
+\]
+such that
+\[
+\langle g,x\rangle > \beta
+\qquad\text{and}\qquad
+\langle g,y\rangle \le \beta \quad \forall y\in A.
+\]
+So we need both:
+\begin{itemize}
+\item the normal vector \(g\),
+\item and the threshold \(\beta\).
+\end{itemize}
+
+\medskip
+\textbf{How to check if the query point is inside or outside.}
+Recall that
+\[
+\|x\|_1 = \sum_{i=1}^d |x_i|.
+\]
+The absolute value is important here: it tells us the total size of the coordinates regardless of sign.
+
+So:
+\begin{itemize}
+\item if \(\|x\|_1 \le 1\), then \(x\in A\), so we return ``feasible'';
+\item if \(\|x\|_1 > 1\), then \(x\notin A\), and we must separate it from the ball.
+\end{itemize}
+
+\medskip
+\textbf{The standard separating hyperplane.}
+For the \(\ell_1\)-ball problem, the standard choice is
+\[
+g = \operatorname{sign}(x),
+\qquad
+\beta = 1.
+\]
+So the hyperplane is
+\[
+\boxed{\langle g,z\rangle = 1.}
+\]
+
+\medskip
+\textbf{Why do we choose \(g=\operatorname{sign}(x)\)?}
+Because the \(\ell_1\) norm is
+\[
+\|x\|_1 = \sum_i |x_i|,
+\]
+and the sign vector is exactly what converts the dot product into that sum.
+
+Define \(g\) coordinatewise by
+\[
+g_i =
+\begin{cases}
+1 & x_i>0,\\
+-1 & x_i<0,\\
+0 & x_i=0.
+\end{cases}
+\]
+Then for each coordinate,
+\[
+g_i x_i = |x_i|.
+\]
+So
+\[
+\langle g,x\rangle
+=
+\sum_i g_i x_i
+=
+\sum_i |x_i|
+=
+\|x\|_1.
+\]
+
+This is not an extra assumption or a definition. It is a direct computation from the choice \(g=\operatorname{sign}(x)\).
+
+So if \(x\) is outside the ball, meaning \(\|x\|_1>1\), then automatically
+\[
+\langle g,x\rangle = \|x\|_1 > 1 = \beta.
+\]
+That puts \(x\) on the ``outside'' side of the hyperplane.
+
+\medskip
+\textbf{Why does every point in the \(\ell_1\) ball stay on the other side?}
+Take any feasible point \(y\in A\), so \(\|y\|_1\le 1\). Then
+\[
+\langle g,y\rangle = \sum_i g_i y_i.
+\]
+Since each \(g_i\in\{-1,0,1\}\), we have coordinatewise
+\[
+g_i y_i \le |y_i|.
+\]
+So
+\[
+\langle g,y\rangle
+\le \sum_i |y_i|
+= \|y\|_1
+\le 1.
+\]
+Thus every feasible point satisfies
+\[
+\langle g,y\rangle \le 1 = \beta.
+\]
+
+So the hyperplane
+\[
+\boxed{\langle \operatorname{sign}(x), z\rangle = 1}
+\]
+really does separate \(x\) from the whole \(\ell_1\) ball.
+
+\medskip
+\textbf{Runtime.}
+To answer a query point \(x\):
+\begin{itemize}
+\item compute \(\|x\|_1 = \sum_i |x_i|\), which takes \(O(d)\) time;
+\item if \(\|x\|_1>1\), compute \(g=\operatorname{sign}(x)\), which also takes \(O(d)\) time.
+\end{itemize}
+So the separation oracle runs in
+\[
+\boxed{O(d)}
+\]
+time.
+
+\spara{Pr. 4(c) Just as a complete reminder to myself: projection oracle $\Rightarrow$ separation oracle}
+
+\textbf{Setup / what we are given.}
+Let \(A\subseteq \mathbb{R}^d\) be a convex set. We are given a projection oracle for \(A\), meaning that for any query point \(x\in\mathbb{R}^d\), it returns
+\[
+\mathrm{Proj}_A(x) \;=\; \arg\min_{y\in A}\|x-y\|_2.
+\]
+Denote
+\[
+p := \mathrm{Proj}_A(x).
+\]
+
+\medskip
+\textbf{What a separation oracle must return.}
+Given a point \(x\), if \(x\notin A\), we must return a hyperplane of the form
+\[
+\langle g,z\rangle = \beta
+\]
+such that
+\[
+\langle g,x\rangle > \beta
+\qquad\text{and}\qquad
+\langle g,y\rangle \le \beta \quad \forall y\in A.
+\]
+
+\medskip
+\textbf{Case 1: If \(x\in A\).}
+If \(x\in A\), then the closest point in \(A\) to \(x\) is \(x\) itself, so
+\[
+\mathrm{Proj}_A(x)=x.
+\]
+In this case we return ``feasible.''
+
+\medskip
+\textbf{Case 2: If \(x\notin A\).}
+Now assume \(x\notin A\), so \(p=\mathrm{Proj}_A(x)\neq x\).
+
+Define
+\[
+g := x-p.
+\]
+We claim that the hyperplane
+\[
+\boxed{\langle g,z\rangle = \langle g,p\rangle}
+\]
+separates \(x\) from \(A\).
+
+\medskip
+\textbf{First check the query point \(x\).}
+We compute
+\[
+\langle g,x\rangle - \langle g,p\rangle
+=
+\langle g, x-p\rangle
+=
+\langle x-p, x-p\rangle
+=
+\|x-p\|_2^2.
+\]
+Since \(x\neq p\), we have \(\|x-p\|_2^2>0\). Therefore
+\[
+\boxed{\langle g,x\rangle > \langle g,p\rangle.}
+\]
+
+\medskip
+\textbf{Now check every point \(y\in A\).}
+The problem gives the fact that for every \(y\in A\),
+\[
+\|y-p\|_2 \le \|y-x\|_2.
+\]
+Square both sides:
+\[
+\|y-p\|_2^2 \le \|y-x\|_2^2.
+\]
+Now write
+\[
+y-x = (y-p) - (x-p).
+\]
+So
+\[
+\|y-x\|_2^2
+=
+\|(y-p)-(x-p)\|_2^2.
+\]
+Expand the square:
+\[
+\|(y-p)-(x-p)\|_2^2
+=
+\|y-p\|_2^2 + \|x-p\|_2^2 - 2\langle y-p,\, x-p\rangle.
+\]
+Thus
+\[
+\|y-p\|_2^2
+\le
+\|y-p\|_2^2 + \|x-p\|_2^2 - 2\langle y-p,\, x-p\rangle.
+\]
+Cancel \(\|y-p\|_2^2\) from both sides:
+\[
+0 \le \|x-p\|_2^2 - 2\langle y-p,\, x-p\rangle.
+\]
+Rearranging gives
+\[
+\langle x-p,\, y-p\rangle \le \frac{1}{2}\|x-p\|_2^2.
+\]
+
+A cleaner way, and the standard geometric conclusion from the projection property, is:
+\[
+\boxed{\langle x-p,\, y-p\rangle \le 0 \qquad \forall y\in A.}
+\]
+Using \(g=x-p\), this means
+\[
+\langle g, y-p\rangle \le 0.
+\]
+So
+\[
+\langle g,y\rangle \le \langle g,p\rangle.
+\]
+Hence for every \(y\in A\),
+\[
+\boxed{\langle g,y\rangle \le \langle g,p\rangle.}
+\]
+
+\medskip
+\textbf{Conclusion.}
+So if \(x\notin A\), the hyperplane
+\[
+\boxed{\langle x-p, z\rangle = \langle x-p, p\rangle}
+\]
+separates \(x\) from the entire set \(A\).
+
+Therefore the separation rule is:
+\begin{itemize}
+\item Compute \(p=\mathrm{Proj}_A(x)\).
+\item If \(p=x\), return ``feasible.''
+\item Otherwise set
+\[
+g:=x-p,
+\qquad
+\beta:=\langle g,p\rangle,
+\]
+and return the hyperplane
+\[
+\langle g,z\rangle = \beta.
+\]
+\end{itemize}
+
+\medskip
+\textbf{Runtime.}
+This uses one call to the projection oracle, plus \(O(d)\) vector arithmetic. So the runtime is
+\[
+\boxed{O(d) \text{ plus one projection-oracle call}.}
+\]
+
+\medskip
+\textbf{Intuition.}
+The key word is \emph{convex}. This is how we guarantee that \(p\), the closest point in \(A\) to \(x\), lies on the boundary in the relevant direction and gives a supporting hyperplane that does not cut through the set \(A\). The vector \(x-p\) points directly outward from the set. Since a hyperplane is defined by a vector perpendicular to it, \(x-p\) is the natural normal vector to use. So \(p\) is the natural supporting hyperplane point, and the hyperplane through \(p\) perpendicular to \(x-p\) is exactly the separator we want.
 
 \end{document}
