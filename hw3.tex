@@ -1005,11 +1005,13 @@ Now assume \(x\notin A\), so \(p=\mathrm{Proj}_A(x)\neq x\).
 
 Define
 \[
-g := x-p.
+g := x-p,
+\qquad
+\beta := \langle g,p\rangle.
 \]
 We claim that the hyperplane
 \[
-\boxed{\langle g,z\rangle = \langle g,p\rangle}
+\boxed{\langle g,z\rangle = \beta}
 \]
 separates \(x\) from \(A\).
 
@@ -1031,61 +1033,12 @@ Since \(x\neq p\), we have \(\|x-p\|_2^2>0\). Therefore
 \]
 
 \medskip
-\textbf{Now check every point \(y\in A\).}
-The problem gives the fact that for every \(y\in A\),
-\[
-\|y-p\|_2 \le \|y-x\|_2.
-\]
-Square both sides:
-\[
-\|y-p\|_2^2 \le \|y-x\|_2^2.
-\]
-Now write
-\[
-y-x = (y-p) - (x-p).
-\]
-So
-\[
-\|y-x\|_2^2
-=
-\|(y-p)-(x-p)\|_2^2.
-\]
-Expand the square:
-\[
-\|(y-p)-(x-p)\|_2^2
-=
-\|y-p\|_2^2 + \|x-p\|_2^2 - 2\langle y-p,\, x-p\rangle.
-\]
-Thus
-\[
-\|y-p\|_2^2
-\le
-\|y-p\|_2^2 + \|x-p\|_2^2 - 2\langle y-p,\, x-p\rangle.
-\]
-Cancel \(\|y-p\|_2^2\) from both sides:
-\[
-0 \le \|x-p\|_2^2 - 2\langle y-p,\, x-p\rangle.
-\]
-Rearranging gives
-\[
-\langle x-p,\, y-p\rangle \le \frac{1}{2}\|x-p\|_2^2.
-\]
+\textbf{Why every point in \(A\) stays on the other side (conceptually).}
+The key word is \emph{convex}. Since \(A\) is convex and \(p\) is the closest point in \(A\) to \(x\), the vector \(x-p\) points directly outward from the set. A hyperplane is defined by a vector perpendicular to it, so \(x-p\) is the natural normal vector to use. Thus the hyperplane through \(p\) perpendicular to \(x-p\) is the natural supporting hyperplane: intuitively, because \(p\) is the closest point, this hyperplane touches the set at \(p\) and does not cut through \(A\).
 
-A cleaner way, and the standard geometric conclusion from the projection property, is:
-\[
-\boxed{\langle x-p,\, y-p\rangle \le 0 \qquad \forall y\in A.}
-\]
-Using \(g=x-p\), this means
-\[
-\langle g, y-p\rangle \le 0.
-\]
-So
+So for every \(y\in A\), we have
 \[
 \langle g,y\rangle \le \langle g,p\rangle.
-\]
-Hence for every \(y\in A\),
-\[
-\boxed{\langle g,y\rangle \le \langle g,p\rangle.}
 \]
 
 \medskip
@@ -1121,6 +1074,6 @@ This uses one call to the projection oracle, plus \(O(d)\) vector arithmetic. So
 
 \medskip
 \textbf{Intuition.}
-The key word is \emph{convex}. This is how we guarantee that \(p\), the closest point in \(A\) to \(x\), lies on the boundary in the relevant direction and gives a supporting hyperplane that does not cut through the set \(A\). The vector \(x-p\) points directly outward from the set. Since a hyperplane is defined by a vector perpendicular to it, \(x-p\) is the natural normal vector to use. So \(p\) is the natural supporting hyperplane point, and the hyperplane through \(p\) perpendicular to \(x-p\) is exactly the separator we want.
+The key word is \emph{convex}. This is how we guarantee that \(p\), the closest point in \(A\) to \(x\), is on the boundary in the relevant direction and gives a supporting hyperplane that does not go through the set. Since a hyperplane is defined by a vector perpendicular to it, \(x-p\) is the natural normal vector. So \(p\) is the natural supporting point, and the hyperplane through \(p\) perpendicular to \(x-p\) is exactly the separator we want.
 
 \end{document}
