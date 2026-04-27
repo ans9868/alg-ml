@@ -211,6 +211,26 @@ k = O\!\left(\frac{\log n}{\epsilon^2}\right)
 dimensions, the projected points $\Pi X$ and $\Pi Y$ are still separable by a hyperplane with margin at least $\epsilon/4$, with probability at least $9/10$.
 
 \medskip
+\textbf{JL setup (choose the $9/10$ here).}
+Let $S$ be the finite set of vectors we need JL to preserve (defined below).
+Apply the Johnson--Lindenstrauss lemma to $S$ with distortion parameter $\alpha>0$
+and failure probability
+\[
+\delta_{\mathrm{JL}} := \frac{1}{10}.
+\]
+Define the good event
+\[
+E := \Big\{\forall u,v\in S:\ (1-\alpha)\|u-v\|_2^2 \le \|\Pi u-\Pi v\|_2^2 \le (1+\alpha)\|u-v\|_2^2\Big\}.
+\]
+Then the JL lemma guarantees
+\[
+\Pr(E) \ge 1-\delta_{\mathrm{JL}} = \frac{9}{10},
+\]
+provided $k = O\!\left(\frac{\log |S|}{\alpha^2}\right)$.
+In the remainder, we assume $E$ holds and prove the projected data has margin at least $\epsilon/4$.
+This implies the final claim holds with probability at least $9/10$.
+
+\medskip
 \textbf{Step 1: Apply JL to the right finite set.}
 Consider the finite set
 \[
@@ -709,11 +729,25 @@ This is the key progress inequality.
 
 \medskip
 \textbf{Step 5: Use the gradient bound $\norm{g_i}_2\le G$.}
-If $\norm{g_i}_2\le G$, then $\norm{g_i}_2^2\le G^2$, hence
+Starting from the gradient bound,
+\[
+\norm{g_i}_2\le G
+\quad\Longrightarrow\quad
+\norm{g_i}_2^2\le G^2.
+\]
+Since both sides are positive, taking reciprocals flips the inequality:
+\[
+\frac{1}{\norm{g_i}_2^2} \ge \frac{1}{G^2}.
+\]
+Multiplying by $h_i^2\ge 0$ gives
 \[
 \frac{h_i^2}{\norm{g_i}_2^2} \ge \frac{h_i^2}{G^2}.
 \]
-Thus,
+Therefore,
+\[
+-\frac{h_i^2}{\norm{g_i}_2^2} \le -\frac{h_i^2}{G^2},
+\]
+and from Step 4 we obtain
 \[
 \boxed{
 \norm{x^{(i+1)}-x^*}_2^2
@@ -792,6 +826,19 @@ f(\hat x)-f(x^*) = \min_{0\le i<T} h_i \le \varepsilon.
 \subsection{Problem 4: Separation Oracles}
 \textbf{(12 pts)} Describe efficient separation oracles for each of the following families of convex sets.  Here, ``efficient'' means linear time plus $O(1)$ calls to any additional oracles provided to you.
 
+\subsubsection*{Problem 4 Intro}
+In all three parts, the goal is to build a separation oracle for a convex set $A$. Given a query point $x$, a separation oracle must either certify that $x\in A$ (return ``feasible''), or return a hyperplane with normal vector $g$ and threshold $\beta$:
+\[
+\langle g,z\rangle = \beta
+\]
+such that
+\[
+\langle g,x\rangle > \beta
+\qquad\text{and}\qquad
+\langle g,y\rangle \le \beta \quad \forall y\in A.
+\]
+So in each part, we choose the right $g,\beta$, then check that the query point is on one side and all feasible points are on the other.
+
 \begin{enumerate}[label=(\alph*)]
 	\item
 	The set $A \cap B$, given separation oracles for $A$ and $B$.
@@ -808,7 +855,7 @@ f(\hat x)-f(x^*) = \min_{0\le i<T} h_i \le \varepsilon.
 \end{enumerate}
 Above you may wish to use the following fact that was stated but not formally proven in class: for any point $\bv{x}$, convex set $A$, and $\bv{z}\in A$, $\|\bv{z}-\text{Proj}_A(\bv{x})\|_2 \leq \|\bv{z} - \bv{x}\|_2$.
 
-\spara{4.a}
+\subsubsection*{(a) Intersection}
 
 \textbf{Given a point $x$:}
 \begin{enumerate}
@@ -835,28 +882,13 @@ Hence any hyperplane separating $x$ from $A$ also separates $x$ from $A\cap B$, 
 \textbf{Efficiency.}
 The procedure uses at most two oracle calls, so it is efficient and $O(1)$.
 
-\spara{Pr. 4(b)}
+\subsubsection*{(b) $\ell_1$ ball}
 
-\textbf{Setup / what a separation oracle must return. ( this is a bit of a reminder ot myself of the definition of a separation oracle.)}
+\textbf{Set definition.}
 Let
 \[
 A := \{z\in\mathbb{R}^d : \|z\|_1 \le 1\}.
 \]
-Given a query point \(x\in\mathbb{R}^d\), if \(x\notin A\), we must return a hyperplane of the form
-\[
-\langle g,z\rangle = \beta
-\]
-such that
-\[
-\langle g,x\rangle > \beta
-\qquad\text{and}\qquad
-\langle g,y\rangle \le \beta \quad \forall y\in A.
-\]
-So we need both:
-\begin{itemize}
-\item the normal vector \(g\),
-\item and the threshold \(\beta\).
-\end{itemize}
 
 \medskip
 \textbf{How to check if the query point is inside or outside.}
@@ -966,9 +998,9 @@ So the separation oracle runs in
 \]
 time.
 
-\spara{Pr. 4(c) Just as a complete reminder to myself: projection oracle $\Rightarrow$ separation oracle}
+\subsubsection*{(c) Projection oracle}
 
-\textbf{Setup / what we are given.}
+\textbf{Given.}
 Let \(A\subseteq \mathbb{R}^d\) be a convex set. We are given a projection oracle for \(A\), meaning that for any query point \(x\in\mathbb{R}^d\), it returns
 \[
 \mathrm{Proj}_A(x) \;=\; \arg\min_{y\in A}\|x-y\|_2.
@@ -976,19 +1008,6 @@ Let \(A\subseteq \mathbb{R}^d\) be a convex set. We are given a projection oracl
 Denote
 \[
 p := \mathrm{Proj}_A(x).
-\]
-
-\medskip
-\textbf{What a separation oracle must return.}
-Given a point \(x\), if \(x\notin A\), we must return a hyperplane of the form
-\[
-\langle g,z\rangle = \beta
-\]
-such that
-\[
-\langle g,x\rangle > \beta
-\qquad\text{and}\qquad
-\langle g,y\rangle \le \beta \quad \forall y\in A.
 \]
 
 \medskip
@@ -1036,10 +1055,11 @@ Since \(x\neq p\), we have \(\|x-p\|_2^2>0\). Therefore
 \textbf{Why every point in \(A\) stays on the other side (conceptually).}
 The key word is \emph{convex}. Since \(A\) is convex and \(p\) is the closest point in \(A\) to \(x\), the vector \(x-p\) points directly outward from the set. A hyperplane is defined by a vector perpendicular to it, so \(x-p\) is the natural normal vector to use. Thus the hyperplane through \(p\) perpendicular to \(x-p\) is the natural supporting hyperplane: intuitively, because \(p\) is the closest point, this hyperplane touches the set at \(p\) and does not cut through \(A\).
 
-So for every \(y\in A\), we have
+So conceptually, for every \(y\in A\), we should have
 \[
 \langle g,y\rangle \le \langle g,p\rangle.
 \]
+since this hyperplane is the supporting hyperplane at the closest boundary point \(p\).
 
 \medskip
 \textbf{Conclusion.}
@@ -1072,8 +1092,7 @@ This uses one call to the projection oracle, plus \(O(d)\) vector arithmetic. So
 \boxed{O(d) \text{ plus one projection-oracle call}.}
 \]
 
-\medskip
 \textbf{Intuition.}
-The key word is \emph{convex}. This is how we guarantee that \(p\), the closest point in \(A\) to \(x\), is on the boundary in the relevant direction and gives a supporting hyperplane that does not go through the set. Since a hyperplane is defined by a vector perpendicular to it, \(x-p\) is the natural normal vector. So \(p\) is the natural supporting point, and the hyperplane through \(p\) perpendicular to \(x-p\) is exactly the separator we want.
+For convex sets, the closest point $p$ to $x$ naturally defines a supporting hyperplane through $p$ with normal $x-p$, which is exactly the separator used above.
 
 \end{document}
